@@ -1327,6 +1327,39 @@ body {
           <span class="cv-stat-pill light">中英双语</span>
         </div>
 
+        <!-- 项目（游戏优先）-->
+        <div>
+          <div class="cv-section-title">代表项目</div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">独立游戏 Zombie Runner</span>
+            </div>
+            <div class="cv-exp-role">独立开发者 · 已上线 Steam</div>
+            <ul class="cv-exp-bullets">
+              <li>独立承担程序架构、UI、美术资源全栈开发并成功发布</li>
+            </ul>
+          </div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">MultiTrace（本参赛作品）</span>
+            </div>
+            <div class="cv-exp-role">7-Agent AI 企业反腐败调查平台</div>
+            <ul class="cv-exp-bullets">
+              <li>独立自学 LangGraph、LLM 工程链，从零构建完整多 Agent 系统</li>
+            </ul>
+          </div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">UCSD 三晤剧社</span>
+              <span class="cv-exp-date">在任</span>
+            </div>
+            <div class="cv-exp-role">社长</div>
+            <ul class="cv-exp-bullets">
+              <li>统筹 30+ 人跨职能团队（演员·技术·宣传），演出覆盖 1,000+ 观众</li>
+            </ul>
+          </div>
+        </div>
+
         <!-- 实习 -->
         <div>
           <div class="cv-section-title">实习经历</div>
@@ -1352,39 +1385,6 @@ body {
             <ul class="cv-exp-bullets">
               <li>在医院生产环境部署软件补丁，维护医疗信息系统稳定运行</li>
               <li>熟悉高可靠性系统维护与技术支持流程</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- 项目 -->
-        <div>
-          <div class="cv-section-title">代表项目</div>
-          <div class="cv-exp-item">
-            <div class="cv-exp-header">
-              <span class="cv-exp-org">MultiTrace（本参赛作品）</span>
-            </div>
-            <div class="cv-exp-role">7-Agent AI 企业反腐败调查平台</div>
-            <ul class="cv-exp-bullets">
-              <li>独立自学 LangGraph、LLM 工程链，从零构建完整多 Agent 系统</li>
-            </ul>
-          </div>
-          <div class="cv-exp-item">
-            <div class="cv-exp-header">
-              <span class="cv-exp-org">UCSD 三晤剧社</span>
-              <span class="cv-exp-date">在任</span>
-            </div>
-            <div class="cv-exp-role">社长</div>
-            <ul class="cv-exp-bullets">
-              <li>统筹 30+ 人跨职能团队（演员·技术·宣传），演出覆盖 1,000+ 观众</li>
-            </ul>
-          </div>
-          <div class="cv-exp-item">
-            <div class="cv-exp-header">
-              <span class="cv-exp-org">独立游戏 Zombie Runner</span>
-            </div>
-            <div class="cv-exp-role">独立开发者 · 已上线 Steam</div>
-            <ul class="cv-exp-bullets">
-              <li>独立承担程序架构、UI、美术资源全栈开发并成功发布</li>
             </ul>
           </div>
         </div>
@@ -1951,7 +1951,73 @@ body {
     <div class="sec-title">05 · 7-Agent 三层协作架构</div>
     <div class="sec-sub">基于 LangGraph StateGraph 构建，7 个专职 Agent 共享 InvestigationState，通过条件边驱动完整调查管线</div>
 
-    <div class="arch-diagram" style="margin-bottom:12px;">
+    <!-- 架构树状总览 -->
+    <div style="background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:11px 16px;margin-bottom:12px;">
+      <div style="font-size:9pt;font-weight:700;color:var(--text-3);text-align:center;margin-bottom:9px;letter-spacing:.5px;">ARCHITECTURE OVERVIEW · 3层 7-Agent 拓扑</div>
+
+      <!-- Layer 1: A0 -->
+      <div style="display:flex;justify-content:center;margin-bottom:5px;">
+        <div style="background:var(--navy);color:white;border-radius:7px;padding:7px 28px;text-align:center;">
+          <span style="font-size:14pt;font-weight:900;color:#93c5fd;line-height:1;">A0</span>
+          <span style="font-size:9.5pt;font-weight:800;"> 总指挥 · Orchestrator</span>
+          <div style="font-size:7.5pt;color:rgba(255,255,255,.5);margin-top:2px;">HITL Tier 1 阻断 · Step 1 / 8 / 12 · LangGraph interrupt()</div>
+        </div>
+      </div>
+
+      <!-- connector -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <div style="flex:1;height:1px;background:#cbd5e1;"></div>
+        <div style="font-size:8pt;color:var(--text-4);white-space:nowrap;">↓ &nbsp;并行分发至分析层</div>
+        <div style="flex:1;height:1px;background:#cbd5e1;"></div>
+      </div>
+
+      <!-- Layer 2: A1–A4 -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:5px;">
+        <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:6px;padding:7px 6px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--blue);line-height:1;">A1</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">文档情报官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Steps 2–4</div>
+        </div>
+        <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:6px;padding:7px 6px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--blue);line-height:1;">A2</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">实体图谱官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Steps 5–6</div>
+        </div>
+        <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:6px;padding:7px 6px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--blue);line-height:1;">A3</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">统计核查官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Step 7a</div>
+        </div>
+        <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:6px;padding:7px 6px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--blue);line-height:1;">A4</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">行为画像官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Step 7b</div>
+        </div>
+      </div>
+
+      <!-- connector -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <div style="flex:1;height:1px;background:#cbd5e1;"></div>
+        <div style="font-size:8pt;color:var(--text-4);white-space:nowrap;">↓ &nbsp;汇聚至综合层</div>
+        <div style="flex:1;height:1px;background:#cbd5e1;"></div>
+      </div>
+
+      <!-- Layer 3: A5–A6 -->
+      <div style="display:flex;justify-content:center;gap:16px;">
+        <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:6px;padding:7px 28px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--green);line-height:1;">A5</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">假设综合官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Steps 9–11</div>
+        </div>
+        <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:6px;padding:7px 28px;text-align:center;">
+          <div style="font-size:13pt;font-weight:900;color:var(--green);line-height:1;">A6</div>
+          <div style="font-size:8pt;font-weight:700;color:var(--navy);margin-top:2px;">报告生成官</div>
+          <div style="font-size:7.5pt;color:var(--text-3);margin-top:1px;">Step 12</div>
+        </div>
+      </div>
+    </div>
+
+        <div class="arch-diagram" style="margin-bottom:12px;">
       <!-- Layer 1: Orchestrator -->
       <div class="arch-layer">
         <div class="arch-layer-label">Layer 1 — 编排层 · HITL 守门人</div>
