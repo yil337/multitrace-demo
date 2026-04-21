@@ -1,0 +1,3378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MultiTrace — AI 企业反腐败调查平台 · 技术方案书</title>
+<style>
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════════════ */
+:root {
+  --navy:      #0d1f3c;
+  --navy-mid:  #162d54;
+  --navy-lite: #1e3a6e;
+  --blue:      #2563eb;
+  --blue-l:    #3b82f6;
+  --blue-pale: #eff6ff;
+  --blue-mid:  #dbeafe;
+  --red:       #dc2626;
+  --red-pale:  #fef2f2;
+  --green:     #16a34a;
+  --green-pale:#f0fdf4;
+  --amber:     #d97706;
+  --amber-pale:#fffbeb;
+  --purple:    #7c3aed;
+  --text:      #111827;
+  --text-2:    #374151;
+  --text-3:    #6b7280;
+  --text-4:    #9ca3af;
+  --border:    #e5e7eb;
+  --border-2:  #d1d5db;
+  --bg:        #f9fafb;
+  --white:     #ffffff;
+  /* page layout */
+  --pw: 210mm;
+  --ph: 297mm;
+  --px: 18mm;
+  --pt: 16mm;
+  --pb: 14mm;
+}
+
+/* ══════════════════════════════════════════════
+   BASE
+══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 9pt; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB',
+               'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text);
+  line-height: 1.65;
+  background: #dde2e8;
+}
+
+/* ══════════════════════════════════════════════
+   SCREEN PREVIEW
+══════════════════════════════════════════════ */
+@media screen {
+  body { padding: 32px 0 48px; }
+  .page {
+    width: var(--pw);
+    min-height: var(--ph);
+    background: var(--white);
+    margin: 0 auto 28px;
+    box-shadow: 0 6px 32px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.10);
+    position: relative;
+    overflow: hidden;
+  }
+  .print-btn {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 11px 22px;
+    font-size: 12pt;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(37,99,235,.45);
+    display: flex; align-items: center; gap: 7px;
+    letter-spacing: .2px;
+    transition: transform .12s, box-shadow .12s;
+    z-index: 999;
+  }
+  .print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37,99,235,.5);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PRINT
+══════════════════════════════════════════════ */
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: white; padding: 0; }
+  .page {
+    width: var(--pw);
+    height: var(--ph);
+    page-break-after: always;
+    overflow: hidden;
+    position: relative;
+  }
+  .page:last-of-type { page-break-after: avoid; }
+  .print-btn { display: none; }
+}
+
+/* ══════════════════════════════════════════════
+   PAGE INNER LAYOUT
+══════════════════════════════════════════════ */
+.page-inner {
+  padding: var(--pt) var(--px) var(--pb);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════════════════════════
+   PAGE HEADER (content pages)
+══════════════════════════════════════════════ */
+.pg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 7px;
+  margin-bottom: 13px;
+  border-bottom: 1.5px solid var(--navy);
+  flex-shrink: 0;
+}
+.pg-logo {
+  display: flex; align-items: center; gap: 7px;
+}
+.pg-logo-box {
+  width: 20px; height: 20px;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 8pt; font-weight: 800;
+}
+.pg-logo-name {
+  font-size: 10pt; font-weight: 800; color: var(--navy);
+  letter-spacing: -.3px;
+}
+.pg-header-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.pg-section-name {
+  font-size: 7.5pt; color: var(--text-3); font-weight: 500;
+  text-transform: uppercase; letter-spacing: .8px;
+}
+.pg-num {
+  font-size: 7.5pt; font-weight: 700;
+  color: var(--white);
+  background: var(--navy);
+  border-radius: 3px;
+  padding: 1px 6px;
+}
+
+/* ══════════════════════════════════════════════
+   PAGE FOOTER
+══════════════════════════════════════════════ */
+.pg-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 6.5pt;
+  color: var(--text-4);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════
+   SECTION TITLE
+══════════════════════════════════════════════ */
+.sec-title {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--navy);
+  border-left: 3px solid var(--blue);
+  padding-left: 8px;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.sec-sub {
+  font-size: 7.5pt;
+  color: var(--text-3);
+  margin-bottom: 10px;
+  margin-left: 11px;
+}
+
+/* ══════════════════════════════════════════════
+   GRID / COLS
+══════════════════════════════════════════════ */
+.cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.cols-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+
+/* ══════════════════════════════════════════════
+   CARDS
+══════════════════════════════════════════════ */
+.card {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 10px 12px;
+  background: var(--white);
+}
+.card-blue { border-color: var(--blue-mid); background: var(--blue-pale); }
+.card-red  { border-color: #fca5a5; background: var(--red-pale); }
+.card-green{ border-color: #86efac; background: var(--green-pale); }
+.card-amber{ border-color: #fcd34d; background: var(--amber-pale); }
+.card-navy {
+  background: var(--navy);
+  border: none;
+  color: white;
+}
+
+.card-label {
+  font-size: 6.5pt; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .7px;
+  color: var(--text-3); margin-bottom: 4px;
+}
+.card-val {
+  font-size: 20pt; font-weight: 800;
+  line-height: 1.1; color: var(--navy);
+}
+.card-val-sm {
+  font-size: 14pt; font-weight: 800;
+  line-height: 1.2; color: var(--navy);
+}
+.card-desc {
+  font-size: 7pt; color: var(--text-3); margin-top: 3px; line-height: 1.45;
+}
+
+/* ══════════════════════════════════════════════
+   DIVIDER
+══════════════════════════════════════════════ */
+.divider { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
+
+/* ══════════════════════════════════════════════
+   BADGES / CHIPS
+══════════════════════════════════════════════ */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 6.5pt; font-weight: 700;
+  border-radius: 3px; padding: 1px 6px;
+}
+.badge-red   { background: #fef2f2; color: var(--red);   border: 1px solid #fca5a5; }
+.badge-amber { background: var(--amber-pale); color: var(--amber); border: 1px solid #fcd34d; }
+.badge-green { background: var(--green-pale); color: var(--green); border: 1px solid #86efac; }
+.badge-blue  { background: var(--blue-pale); color: var(--blue);   border: 1px solid var(--blue-mid); }
+.badge-navy  { background: var(--navy); color: white; border: none; }
+.badge-purple{ background: #f5f3ff; color: var(--purple); border: 1px solid #ddd6fe; }
+
+/* ══════════════════════════════════════════════
+   TABLE
+══════════════════════════════════════════════ */
+.tbl { width: 100%; border-collapse: collapse; font-size: 7.5pt; }
+.tbl th {
+  background: var(--navy);
+  color: white;
+  font-weight: 700;
+  padding: 5px 8px;
+  text-align: left;
+  font-size: 7pt;
+}
+.tbl td { padding: 4px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr.hi-row td { background: #fef2f2; }
+.tbl tr:nth-child(even) td { background: var(--bg); }
+.tbl tr.hi-row td { background: #fef2f2 !important; }
+
+/* ══════════════════════════════════════════════
+   PROGRESS BAR
+══════════════════════════════════════════════ */
+.bar-track {
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+.bar-fill-red   { height: 100%; background: var(--red); border-radius: 3px; }
+.bar-fill-blue  { height: 100%; background: var(--blue); border-radius: 3px; }
+.bar-fill-green { height: 100%; background: var(--green); border-radius: 3px; }
+
+/* sigma bar row */
+.sigma-row { margin-bottom: 7px; }
+.sigma-row-header { display: flex; justify-content: space-between; font-size: 7pt; margin-bottom: 2px; }
+.sigma-label { font-weight: 600; color: var(--text-2); }
+.sigma-val { font-weight: 700; color: var(--red); }
+.sigma-market { font-size: 6.5pt; color: var(--text-3); }
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 1 — COVER  ████████████
+══════════════════════════════════════════════ */
+.cover-page {
+  background: var(--navy);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* decorative accent lines */
+.cover-page::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue), #6366f1, #8b5cf6);
+}
+.cover-bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: .06;
+}
+
+.cover-topbar {
+  padding: 12mm 18mm 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 7.5pt;
+  color: rgba(255,255,255,.5);
+  font-weight: 500;
+  letter-spacing: .5px;
+  flex-shrink: 0;
+}
+.cover-topbar-badge {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 7pt;
+  color: rgba(255,255,255,.7);
+}
+
+.cover-main {
+  padding: 10mm 18mm 0;
+  flex: 1;
+}
+
+.cover-logo-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8mm;
+}
+.cover-logo-box {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--blue-l), var(--purple));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16pt; font-weight: 900;
+  color: white;
+  box-shadow: 0 4px 16px rgba(59,130,246,.4);
+}
+.cover-logo-text { }
+.cover-logo-name {
+  font-size: 18pt; font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.cover-logo-sub {
+  font-size: 7.5pt; color: rgba(255,255,255,.5);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.cover-title {
+  font-size: 24pt;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -.5px;
+  margin-bottom: 5mm;
+  color: white;
+}
+.cover-title span { color: var(--blue-l); }
+
+.cover-tagline {
+  font-size: 9.5pt;
+  color: rgba(255,255,255,.65);
+  margin-bottom: 8mm;
+  line-height: 1.6;
+  max-width: 140mm;
+}
+
+/* key stats row on cover */
+.cover-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 8mm;
+}
+.cover-stat {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.cover-stat-val {
+  font-size: 18pt;
+  font-weight: 900;
+  color: var(--blue-l);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.cover-stat-label {
+  font-size: 6.5pt;
+  color: rgba(255,255,255,.5);
+  margin-top: 3px;
+  line-height: 1.3;
+}
+
+/* website CTA block */
+.cover-demo {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 6mm;
+}
+.cover-demo-icon {
+  font-size: 22pt;
+  flex-shrink: 0;
+}
+.cover-demo-body { flex: 1; }
+.cover-demo-label {
+  font-size: 7pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 3px;
+}
+.cover-demo-url {
+  font-size: 12pt;
+  font-weight: 800;
+  color: var(--blue-l);
+  letter-spacing: -.2px;
+  margin-bottom: 3px;
+}
+.cover-demo-desc {
+  font-size: 7pt;
+  color: rgba(255,255,255,.5);
+  line-height: 1.4;
+}
+.cover-demo-arrow {
+  font-size: 20pt;
+  color: var(--blue-l);
+  flex-shrink: 0;
+  opacity: .7;
+}
+
+.cover-usecase-row {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin-bottom: 8mm;
+}
+.cover-uc-tag {
+  font-size: 7pt;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 20px;
+  padding: 2px 9px;
+  color: rgba(255,255,255,.6);
+}
+
+.cover-bottom {
+  padding: 6mm 18mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 7pt;
+  color: rgba(255,255,255,.35);
+  flex-shrink: 0;
+}
+.cover-bottom-tech {
+  display: flex; gap: 8px;
+}
+.cover-tech-pill {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  padding: 1px 8px;
+  font-size: 6.5pt;
+  color: rgba(255,255,255,.45);
+}
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 2 — OVERVIEW + DEMO  ████████████
+══════════════════════════════════════════════ */
+
+/* browser mock */
+.browser-mock {
+  border: 1px solid var(--border-2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+.browser-bar {
+  background: #f3f4f6;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.browser-dots { display: flex; gap: 4px; }
+.browser-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+.browser-url-box {
+  flex: 1;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 7pt;
+  color: var(--text-3);
+  font-family: monospace;
+}
+.browser-content {
+  padding: 10px;
+  background: white;
+}
+
+/* problem/solution comparison */
+.compare-box {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+.compare-arrow {
+  font-size: 16pt;
+  color: var(--blue);
+  text-align: center;
+}
+.compare-before {
+  background: var(--red-pale);
+  border: 1px solid #fca5a5;
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+.compare-after {
+  background: var(--green-pale);
+  border: 1px solid #86efac;
+  border-radius: 7px;
+  padding: 10px 12px;
+}
+.compare-title {
+  font-size: 7.5pt; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .5px;
+  margin-bottom: 6px;
+}
+.compare-before .compare-title { color: var(--red); }
+.compare-after .compare-title  { color: var(--green); }
+.compare-item {
+  font-size: 7.5pt;
+  color: var(--text-2);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.compare-item::before { content: '•'; flex-shrink: 0; }
+.compare-before .compare-item::before { color: var(--red); }
+.compare-after  .compare-item::before { color: var(--green); }
+
+.big-number {
+  font-size: 20pt;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1.1;
+}
+.compare-before .big-number { color: var(--red); }
+.compare-after  .big-number { color: var(--green); }
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 3 — ARCHITECTURE  ████████████
+══════════════════════════════════════════════ */
+
+/* 3-layer agent diagram */
+.arch-diagram { }
+.arch-layer {
+  margin-bottom: 6px;
+}
+.arch-layer-label {
+  font-size: 6.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--text-4);
+  margin-bottom: 4px;
+}
+.arch-agents {
+  display: grid;
+  gap: 6px;
+}
+.arch-agents.l1 { grid-template-columns: 1fr; }
+.arch-agents.l2 { grid-template-columns: repeat(4, 1fr); }
+.arch-agents.l3 { grid-template-columns: repeat(2, 1fr); }
+
+.arch-agent {
+  border-radius: 6px;
+  padding: 8px 10px;
+  border: 1px solid;
+}
+.arch-agent.orch {
+  background: var(--blue-pale); border-color: var(--blue-mid);
+  display: flex; align-items: center; gap: 10px;
+}
+.arch-agent.analysis {
+  background: #fffbeb; border-color: #fcd34d;
+}
+.arch-agent.synth {
+  background: #f5f3ff; border-color: #ddd6fe;
+}
+.arch-agent-name {
+  font-size: 8pt; font-weight: 800;
+  color: var(--navy); margin-bottom: 1px;
+}
+.arch-agent-role {
+  font-size: 6.5pt; color: var(--text-3);
+  line-height: 1.35;
+}
+.arch-agent-step {
+  font-size: 6pt;
+  background: var(--navy);
+  color: white;
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-top: 4px;
+  display: inline-block;
+  font-weight: 600;
+}
+.arch-agent-icon {
+  font-size: 16pt;
+  flex-shrink: 0;
+}
+
+.arch-connector {
+  display: flex; justify-content: center;
+  color: var(--text-4);
+  font-size: 9pt;
+  margin: 2px 0;
+}
+
+/* 12-step flow */
+.step-flow {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 3px;
+  align-items: start;
+}
+.step-node {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center;
+}
+.step-circle {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--border-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6.5pt; font-weight: 800;
+  color: var(--text-3);
+  flex-shrink: 0;
+  position: relative;
+}
+.step-circle.hitl-1 {
+  background: #fef2f2; border-color: var(--red); color: var(--red);
+}
+.step-circle.hitl-2 {
+  background: #fffbeb; border-color: var(--amber); color: var(--amber);
+}
+.step-circle.auto {
+  background: var(--blue-pale); border-color: var(--blue-mid); color: var(--blue);
+}
+.step-label {
+  font-size: 5.5pt; color: var(--text-3);
+  line-height: 1.3;
+  margin-top: 3px;
+  max-width: 100%;
+}
+.step-label strong {
+  color: var(--text-2);
+}
+
+.step-connector {
+  height: 10px;
+  display: flex; align-items: center;
+  grid-column: span 12;
+}
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 4 — CORE DESIGN  ████████████
+══════════════════════════════════════════════ */
+
+.hitl-tier {
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.hitl-tier.t1 { background: var(--red-pale); border: 1px solid #fca5a5; }
+.hitl-tier.t2 { background: var(--amber-pale); border: 1px solid #fcd34d; }
+.hitl-tier.t3 { background: var(--green-pale); border: 1px solid #86efac; }
+.hitl-tier-header {
+  display: flex; align-items: center; gap: 5px; margin-bottom: 3px;
+}
+.hitl-tier-badge {
+  font-size: 6pt; font-weight: 800;
+  border-radius: 3px; padding: 1px 5px;
+}
+.t1 .hitl-tier-badge { background: var(--red); color: white; }
+.t2 .hitl-tier-badge { background: var(--amber); color: white; }
+.t3 .hitl-tier-badge { background: var(--green); color: white; }
+.hitl-tier-name {
+  font-size: 7.5pt; font-weight: 800; color: var(--text);
+}
+.hitl-tier-desc {
+  font-size: 7pt; color: var(--text-2); line-height: 1.4;
+}
+.hitl-tier-steps {
+  font-size: 6.5pt; color: var(--text-3); margin-top: 2px;
+}
+
+/* confidence formula */
+.conf-formula {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 7.5pt;
+}
+
+/* compliance pillars */
+.compliance-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.compliance-flag { font-size: 14pt; flex-shrink: 0; }
+.compliance-name { font-size: 8pt; font-weight: 800; color: var(--navy); margin-bottom: 2px; }
+.compliance-desc { font-size: 6.5pt; color: var(--text-3); line-height: 1.4; }
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 5 — CASE STUDY  ████████████
+══════════════════════════════════════════════ */
+
+.case-header-band {
+  background: var(--navy);
+  color: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.case-name {
+  font-size: 12pt; font-weight: 900;
+  letter-spacing: -.3px;
+}
+.case-id { font-size: 7pt; color: rgba(255,255,255,.5); margin-top: 2px; }
+.case-meta {
+  display: flex; gap: 12px;
+  font-size: 7pt; color: rgba(255,255,255,.6);
+}
+.case-meta-item { text-align: center; }
+.case-meta-val { font-size: 12pt; font-weight: 800; color: var(--blue-l); display: block; }
+
+/* finding card */
+.finding-card {
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.finding-header {
+  background: var(--navy);
+  color: white;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 7.5pt;
+  font-weight: 800;
+}
+.finding-body {
+  padding: 8px 10px;
+  background: white;
+}
+
+/* evidence count strip */
+.evi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.evi-item {
+  text-align: center;
+  padding: 7px 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.evi-num {
+  font-size: 14pt; font-weight: 900; color: var(--navy);
+  line-height: 1;
+}
+.evi-label {
+  font-size: 6pt; color: var(--text-3); margin-top: 2px; line-height: 1.3;
+}
+
+/* conclusion strip */
+.conclusion-strip {
+  background: linear-gradient(135deg, var(--navy), var(--navy-lite));
+  color: white;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.conclusion-conf {
+  font-size: 28pt; font-weight: 900;
+  color: var(--blue-l);
+  line-height: 1;
+  flex-shrink: 0;
+}
+.conclusion-body { flex: 1; }
+.conclusion-title { font-size: 9pt; font-weight: 800; margin-bottom: 3px; }
+.conclusion-desc { font-size: 7pt; color: rgba(255,255,255,.6); line-height: 1.5; }
+.conclusion-chain {
+  display: flex; gap: 6px; margin-top: 5px;
+}
+.conclusion-chain-pill {
+  font-size: 6pt;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  padding: 1px 7px;
+  color: rgba(255,255,255,.7);
+}
+
+/* ══════════════════════════════════════════════
+   ████████████  PAGE 6 — TECH + REFS  ████████████
+══════════════════════════════════════════════ */
+
+.ref-item {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.ref-item:last-child { border-bottom: none; }
+.ref-badge {
+  font-size: 6pt; font-weight: 700;
+  border-radius: 3px; padding: 1px 5px;
+  flex-shrink: 0; margin-top: 1px;
+}
+.ref-text { font-size: 7pt; color: var(--text-2); line-height: 1.45; }
+.ref-cite { font-size: 6.5pt; color: var(--text-4); font-style: italic; }
+
+.tech-stack-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tech-stack-item:last-child { border-bottom: none; }
+.tech-stack-icon { font-size: 12pt; flex-shrink: 0; margin-top: 1px; }
+.tech-stack-name { font-size: 8pt; font-weight: 800; color: var(--navy); margin-bottom: 1px; }
+.tech-stack-desc { font-size: 7pt; color: var(--text-3); line-height: 1.4; }
+
+/* ══════════════════════════════════════════════
+   AGENT DETAIL PAGES (P05 / P06)
+══════════════════════════════════════════════ */
+.agent-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex: 1;
+}
+.agent-detail-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.agent-detail-card.orch  { border-color: var(--blue-mid); background: var(--blue-pale); }
+.agent-detail-card.intel { border-color: #fcd34d; background: #fffbeb; }
+.agent-detail-card.graph { border-color: #ddd6fe; background: #f5f3ff; }
+.agent-detail-card.stat  { border-color: #a7f3d0; background: #f0fdf4; }
+.agent-detail-card.behav { border-color: #fed7aa; background: #fff7ed; }
+.agent-detail-card.hypo  { border-color: #fca5a5; background: #fef2f2; }
+.agent-detail-card.report{ border-color: var(--border-2); background: var(--bg); }
+
+.adc-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.adc-icon { font-size: 16pt; line-height: 1; flex-shrink: 0; }
+.adc-titles { flex: 1; }
+.adc-num {
+  font-size: 6pt; font-weight: 800; letter-spacing: 1.5px;
+  color: var(--text-3); text-transform: uppercase; margin-bottom: 1px;
+}
+.adc-name { font-size: 9.5pt; font-weight: 900; color: var(--navy); line-height: 1.2; }
+.adc-role { font-size: 7pt; color: var(--text-3); margin-top: 1px; }
+.adc-tier {
+  font-size: 6pt; font-weight: 700;
+  padding: 2px 6px; border-radius: 12px;
+  white-space: nowrap; align-self: flex-start; margin-top: 2px;
+}
+.adc-tier.t1 { background: #fef2f2; color: var(--red); border: 1px solid #fca5a5; }
+.adc-tier.t2 { background: #fffbeb; color: var(--amber); border: 1px solid #fcd34d; }
+.adc-tier.t3 { background: var(--blue-pale); color: var(--blue); border: 1px solid var(--blue-mid); }
+
+.adc-tags {
+  display: flex; flex-wrap: wrap; gap: 3px;
+}
+.adc-tag {
+  font-size: 5.8pt; font-weight: 700;
+  background: rgba(0,0,0,.06); color: var(--text-2);
+  padding: 1px 5px; border-radius: 3px;
+}
+
+.adc-bullets {
+  list-style: none; padding: 0; margin: 0;
+  border-top: 1px solid rgba(0,0,0,.07);
+  padding-top: 5px;
+  flex: 1;
+}
+.adc-bullets li {
+  font-size: 6.8pt; color: var(--text-2);
+  line-height: 1.5; padding-left: 10px;
+  position: relative; margin-bottom: 2px;
+}
+.adc-bullets li::before {
+  content: '▸';
+  position: absolute; left: 0;
+  color: var(--blue); font-size: 6pt; top: 1px;
+}
+.adc-bullets li b { color: var(--navy); }
+
+.adc-steps {
+  font-size: 6pt; font-weight: 700;
+  color: var(--text-3); margin-top: auto;
+  padding-top: 4px; border-top: 1px solid rgba(0,0,0,.07);
+}
+.adc-steps span {
+  background: var(--navy); color: white;
+  border-radius: 2px; padding: 0 4px; margin-right: 2px;
+  font-size: 5.5pt;
+}
+
+/* ══ SCENARIO PAGE ══ */
+.scenario-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--navy); color: white;
+  font-size: 8pt; font-weight: 800;
+  padding: 5px 14px; border-radius: 6px;
+  margin-bottom: 8px;
+}
+.scenario-box {
+  border: 2px solid var(--blue);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  background: var(--blue-pale);
+}
+.scenario-box.secondary {
+  border-color: var(--border-2);
+  background: var(--bg);
+}
+.scenario-letter {
+  font-size: 18pt; font-weight: 900;
+  color: var(--blue); line-height: 1;
+  float: left; margin-right: 8px; margin-top: 2px;
+}
+.scenario-title { font-size: 9.5pt; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.scenario-body  { font-size: 7.5pt; color: var(--text-2); line-height: 1.65; }
+.scenario-match {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+}
+.scenario-match-item {
+  font-size: 6.5pt; font-weight: 700;
+  padding: 3px 8px; border-radius: 4px;
+  background: white; border: 1px solid var(--blue-mid);
+  color: var(--blue);
+}
+
+/* ══ DATA ARCHITECTURE PAGE (P07) ══ */
+.data-layer {
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 7px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.data-layer-num {
+  font-size: 18pt; font-weight: 900;
+  line-height: 1; flex-shrink: 0;
+  width: 22px; text-align: center;
+  margin-top: 2px;
+}
+.data-layer-body { flex: 1; }
+.data-layer-title { font-size: 9pt; font-weight: 800; color: var(--navy); margin-bottom: 5px; }
+.data-layer-items {
+  display: flex; flex-wrap: wrap; gap: 5px;
+}
+.data-item {
+  background: white;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 6px;
+  padding: 5px 8px;
+  min-width: 100px;
+}
+.data-item-name { font-size: 7.5pt; font-weight: 800; color: var(--navy); margin-bottom: 1px; }
+.data-item-desc { font-size: 6.3pt; color: var(--text-3); line-height: 1.4; }
+.data-layer.l1 { background: #eff6ff; }
+.data-layer.l2 { background: #f0fdf4; }
+.data-layer.l3 { background: #fff7ed; }
+.data-layer.l4 { background: var(--bg); }
+
+/* ══════════════════════════════════════════════
+   PAGE 0 — PERSONAL CV
+══════════════════════════════════════════════ */
+.cv-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  height: 100%;
+}
+.cv-left {
+  padding-right: 10mm;
+  border-right: 1.5px solid var(--border-2);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cv-right {
+  padding-left: 10mm;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cv-name {
+  font-size: 22pt;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.cv-name-en {
+  font-size: 10pt;
+  font-weight: 400;
+  color: var(--text-3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.cv-school-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--blue-pale);
+  border-left: 3px solid var(--blue);
+  padding: 7px 10px;
+  border-radius: 0 6px 6px 0;
+}
+.cv-school-logo {
+  font-size: 14pt;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+.cv-school-name {
+  font-size: 8.5pt;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.3;
+}
+.cv-school-detail {
+  font-size: 7pt;
+  color: var(--text-3);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.cv-stats-row {
+  display: flex;
+  gap: 6px;
+}
+.cv-stat-pill {
+  background: var(--navy);
+  color: white;
+  font-size: 7pt;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+.cv-stat-pill.light {
+  background: var(--bg);
+  color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
+.cv-section-title {
+  font-size: 7pt;
+  font-weight: 800;
+  color: var(--text-3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.cv-exp-item {
+  margin-bottom: 8px;
+}
+.cv-exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+.cv-exp-org {
+  font-size: 8pt;
+  font-weight: 800;
+  color: var(--navy);
+}
+.cv-exp-date {
+  font-size: 6.5pt;
+  color: var(--text-4);
+  white-space: nowrap;
+}
+.cv-exp-role {
+  font-size: 7pt;
+  color: var(--blue);
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.cv-exp-bullets {
+  list-style: none;
+  padding: 0; margin: 0;
+}
+.cv-exp-bullets li {
+  font-size: 7pt;
+  color: var(--text-2);
+  line-height: 1.45;
+  padding-left: 10px;
+  position: relative;
+  margin-bottom: 1px;
+}
+.cv-exp-bullets li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  color: var(--blue-mid);
+  font-weight: 900;
+}
+.cv-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.cv-skill-tag {
+  font-size: 6.5pt;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+}
+.cv-contact-row {
+  display: flex;
+  gap: 12px;
+  font-size: 7pt;
+  color: var(--text-3);
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+/* right side */
+.cv-trait-card {
+  background: var(--bg);
+  border: 1px solid var(--border-2);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  padding: 9px 11px;
+}
+.cv-trait-num {
+  font-size: 6.5pt;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.cv-trait-title {
+  font-size: 9pt;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+.cv-trait-body {
+  font-size: 7pt;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.cv-expect-box {
+  background: var(--navy);
+  color: white;
+  border-radius: 8px;
+  padding: 11px 13px;
+  margin-top: auto;
+}
+.cv-expect-label {
+  font-size: 6.5pt;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin-bottom: 6px;
+}
+.cv-expect-text {
+  font-size: 8pt;
+  line-height: 1.6;
+  color: rgba(255,255,255,.92);
+  font-weight: 400;
+}
+
+/* ══ RISK PAGE additions ══ */
+.risk-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 11px;
+}
+.risk-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+.risk-icon { font-size: 12pt; flex-shrink: 0; }
+.risk-title { font-size: 8.5pt; font-weight: 800; color: var(--navy); }
+.risk-severity {
+  font-size: 6pt; font-weight: 700;
+  padding: 1px 6px; border-radius: 3px;
+  margin-left: auto;
+}
+.risk-severity.high { background: #fef2f2; color: var(--red); }
+.risk-severity.med  { background: #fffbeb; color: var(--amber); }
+.risk-severity.low  { background: #f0fdf4; color: var(--green); }
+.risk-body { font-size: 7pt; color: var(--text-2); line-height: 1.5; margin-bottom: 5px; }
+.risk-counter {
+  font-size: 7pt;
+  color: var(--blue);
+  font-weight: 600;
+  padding-top: 5px;
+  border-top: 1px solid var(--border);
+}
+.risk-counter::before { content: '→ 应对：'; color: var(--text-3); font-weight: 400; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 导出 PDF</button>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 0 — PERSONAL CV (首页强制要求)
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+
+    <!-- 页眉 -->
+    <div class="pg-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="logo-mark">MT</div>
+        <span style="font-size:10.5pt;font-weight:700;color:var(--navy);">MultiTrace</span>
+        <span style="font-size:10.5pt;color:var(--text-4);margin-left:4px;">· 2026 Deloitte Digital Camp · Team F</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10.5pt;color:var(--text-3);">参赛者简介</span>
+        <div class="pg-num">00</div>
+      </div>
+    </div>
+
+    <div class="cv-page">
+
+      <!-- ── 左栏：CV ── -->
+      <div class="cv-left">
+
+        <div>
+          <div class="cv-name">李奕东</div>
+          <div class="cv-name-en">Yidong Li</div>
+        </div>
+
+        <div class="cv-school-row">
+          <div class="cv-school-logo">🎓</div>
+          <div>
+            <div class="cv-school-name">加州大学圣地亚哥分校 UCSD</div>
+            <div class="cv-school-detail">数学与计算机科学 B.S. · 经济学 B.S.<br>辅修：跨学科计算与艺术 · 2024–2028届</div>
+          </div>
+        </div>
+
+        <div class="cv-stats-row">
+          <span class="cv-stat-pill">GPA 3.9 / 4.0</span>
+          <span class="cv-stat-pill light">大二在读</span>
+          <span class="cv-stat-pill light">中英双语</span>
+        </div>
+
+        <!-- 实习 -->
+        <div>
+          <div class="cv-section-title">实习经历</div>
+
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">内江市税务局 · 信息技术部门</span>
+              <span class="cv-exp-date">2025.08</span>
+            </div>
+            <div class="cv-exp-role">软件开发实习生</div>
+            <ul class="cv-exp-bullets">
+              <li>独立设计开发并部署内部全栈 Web 系统，覆盖需求分析至上线完整流程</li>
+              <li>将电话流程迁移至线上，显著提升政务处理效率与管理规范性</li>
+            </ul>
+          </div>
+
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">内江浩瀚软件开发有限公司</span>
+              <span class="cv-exp-date">2025.08</span>
+            </div>
+            <div class="cv-exp-role">IT 运维实习生</div>
+            <ul class="cv-exp-bullets">
+              <li>在医院生产环境部署软件补丁，维护医疗信息系统稳定运行</li>
+              <li>熟悉高可靠性系统维护与技术支持流程</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 项目 -->
+        <div>
+          <div class="cv-section-title">代表项目</div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">MultiTrace（本参赛作品）</span>
+            </div>
+            <div class="cv-exp-role">7-Agent AI 企业反腐败调查平台</div>
+            <ul class="cv-exp-bullets">
+              <li>独立自学 LangGraph、LLM 工程链，从零构建完整多 Agent 系统</li>
+            </ul>
+          </div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">UCSD 三晤剧社</span>
+              <span class="cv-exp-date">在任</span>
+            </div>
+            <div class="cv-exp-role">社长</div>
+            <ul class="cv-exp-bullets">
+              <li>统筹 30+ 人跨职能团队（演员·技术·宣传），演出覆盖 1,000+ 观众</li>
+            </ul>
+          </div>
+          <div class="cv-exp-item">
+            <div class="cv-exp-header">
+              <span class="cv-exp-org">独立游戏 Zombie Runner</span>
+            </div>
+            <div class="cv-exp-role">独立开发者 · 已上线 Steam</div>
+            <ul class="cv-exp-bullets">
+              <li>独立承担程序架构、UI、美术资源全栈开发并成功发布</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 技能 -->
+        <div>
+          <div class="cv-section-title">技术技能</div>
+          <div class="cv-skill-tags">
+            <span class="cv-skill-tag">Python</span>
+            <span class="cv-skill-tag">Java</span>
+            <span class="cv-skill-tag">LangGraph</span>
+            <span class="cv-skill-tag">LLM 工程</span>
+            <span class="cv-skill-tag">vis.js</span>
+            <span class="cv-skill-tag">pandas / Stata</span>
+            <span class="cv-skill-tag">Git / GitHub</span>
+            <span class="cv-skill-tag">Godot</span>
+            <span class="cv-skill-tag">Photoshop / AI</span>
+          </div>
+        </div>
+
+        <div class="cv-contact-row">
+          <span>📧 yidong289@gmail.com</span>
+          <span>🐙 github.com/yil337</span>
+          <span>📱 +86 187-2102-0928</span>
+        </div>
+
+      </div><!-- /cv-left -->
+
+      <!-- ── 右栏：特质 + 期望 ── -->
+      <div class="cv-right">
+
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);margin-bottom:2px;">三大核心竞争优势</div>
+        <div style="font-size:10pt;color:var(--text-3);margin-bottom:4px;">在本次挑战中有助于团队取得优势的个人特质</div>
+
+        <div class="cv-trait-card">
+          <div class="cv-trait-num">Trait 01</div>
+          <div class="cv-trait-title">跨领域自学与全栈交付</div>
+          <div class="cv-trait-body">横跨 AI Agent 系统、独立游戏、全栈 Web 应用、数据分析、视觉设计等完全不同的领域，均能从零独立学习并交付真实产品——MultiTrace 7-Agent 平台、Steam 上线游戏、个人衣橱 PWA 管理系统、线上关系评估平台（已积累真实用户数据）。面对陌生领域不依赖教程，直接读文档、拆源码，<b>从学到用通常以天计</b>。</div>
+        </div>
+
+        <div class="cv-trait-card">
+          <div class="cv-trait-num">Trait 02</div>
+          <div class="cv-trait-title">跨学科思维 × AI时代认知灵活性</div>
+          <div class="cv-trait-body">数学 × CS × 经济学复合背景，能在技术实现与业务逻辑间灵活切换。更深层的是一种元认知习惯：深刻意识到在日新月异的AI时代，<b>"足够新"永远是一种幻觉</b>——今天的最佳实践明天可能就是包袱。因此始终对已有知识保持警惕，知道何时该主动放下旧框架、拥抱新范式，<b>绝不让现有知识成为学习新知识的障碍</b>。</div>
+        </div>
+
+        <div class="cv-trait-card">
+          <div class="cv-trait-num">Trait 03</div>
+          <div class="cv-trait-title">团队领导与协调执行力</div>
+          <div class="cv-trait-body">担任 30+ 人剧社社长，有跨职能资源整合（演员·技术·宣传·场务）与复杂项目落地经验；同时活跃于 CES、中国学生会等多组织，擅长<b>在不确定环境下快速凝聚共识并推动目标达成</b>。</div>
+        </div>
+
+        <div class="cv-expect-box">
+          <div class="cv-expect-label">参赛期望</div>
+          <div class="cv-expect-text">
+            希望通过参赛深入理解企业 AI 落地的商业逻辑与合规约束，将技术实现能力与真实业务场景对接，建立兼具技术深度与行业视角的复合型思维框架——<b>看清行业底层究竟是怎么运转的</b>。
+          </div>
+        </div>
+
+      </div><!-- /cv-right -->
+    </div><!-- /cv-page -->
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1 — COVER
+══════════════════════════════════════════════ -->
+<div class="page cover-page">
+  <!-- Background decoration -->
+  <div class="cover-bg-circle" style="width:300px;height:300px;background:var(--blue);top:-80px;right:-80px;"></div>
+  <div class="cover-bg-circle" style="width:200px;height:200px;background:var(--purple);bottom:60px;left:-60px;"></div>
+
+  <div class="cover-topbar">
+    <div class="cover-topbar-badge">2026 Deloitte Digital Camp · AI 数字调查工具赛道</div>
+    <div>技术方案书 · Version 2026.04</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-logo-row">
+      <div class="cover-logo-box">MT</div>
+      <div class="cover-logo-text">
+        <div class="cover-logo-name">MultiTrace</div>
+        <div class="cover-logo-sub">AI Multi-Source Investigation Platform</div>
+      </div>
+    </div>
+
+    <div class="cover-title">
+      <span>AI Agent 团队</span>驱动的<br>企业反腐败调查平台
+    </div>
+    <div class="cover-tagline">
+      7 个专职 AI Agent 协同运作，将分析管线从传统 <strong style="color:rgba(255,255,255,.85)">30–45 工作日</strong>压缩至
+      <strong style="color:var(--blue-l)">4–8 小时</strong>，
+      三层人机协同机制确保每个关键结论均经专业人员审查签发。
+    </div>
+
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <div class="cover-stat-val">7</div>
+        <div class="cover-stat-label">专职<br>AI Agents</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-val">12</div>
+        <div class="cover-stat-label">完整调查<br>步骤</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-val">92%</div>
+        <div class="cover-stat-label">综合<br>置信度</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-val">9步</div>
+        <div class="cover-stat-label">全自动<br>执行</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-val">3</div>
+        <div class="cover-stat-label">HITL<br>决策节点</div>
+      </div>
+    </div>
+
+    <div class="cover-usecase-row">
+      <span class="cover-uc-tag">📦 采购欺诈</span>
+      <span class="cover-uc-tag">💸 费用报销舞弊</span>
+      <span class="cover-uc-tag">🏦 资产挪用</span>
+      <span class="cover-uc-tag">💰 行贿受贿</span>
+      <span class="cover-uc-tag">📊 财务造假</span>
+      <span class="cover-uc-tag">🔗 关联交易操控</span>
+    </div>
+
+    <!-- Website CTA -->
+    <div class="cover-demo">
+      <div class="cover-demo-icon">🖥</div>
+      <div class="cover-demo-body">
+        <div class="cover-demo-label">▶ 完整交互演示平台</div>
+        <div class="cover-demo-url">https://multitrace-ai.netlify.app</div>
+        <div class="cover-demo-desc">
+          包含：7 个 Agent 详细架构 · 12 步调查全流程实况 · Operation Greenbridge 完整示范案例
+          · 知识图谱可视化 · HITL 控制界面演示
+        </div>
+      </div>
+      <div class="cover-demo-arrow">→</div>
+    </div>
+  </div>
+
+  <div class="cover-bottom">
+    <div>MultiTrace © 2026 · Powered by LangGraph + GPT-4o + vis.js</div>
+    <div class="cover-bottom-tech">
+      <span class="cover-tech-pill">EU AI Act Art. 14</span>
+      <span class="cover-tech-pill">ACFE FEM 2022</span>
+      <span class="cover-tech-pill">国资委令第43号</span>
+      <span class="cover-tech-pill">AICPA SSFS No.1</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2 — SCENARIO DECLARATION
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">参赛场景声明</div>
+        <div class="pg-num">02</div>
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-bottom:14px;">01 · 参赛场景选择</div>
+
+    <div class="scenario-badge" style="font-size:10.5pt;padding:5px 14px;margin-bottom:12px;">🎯 主选场景</div>
+    <div class="scenario-box" style="margin-bottom:16px;padding:18px 20px;">
+      <div style="overflow:hidden;margin-bottom:12px;">
+        <div class="scenario-letter" style="font-size:36pt;">c)</div>
+        <div class="scenario-title" style="font-size:17pt;">合同与交易风险洞察</div>
+        <div class="scenario-body" style="font-size:11pt;line-height:1.7;margin-top:6px;">将合同条款与交易数据关联，发现异常模式与风险结构，可穿透至原始依据，输出<b>可追溯结论</b>。MultiTrace 以 7-Agent 并行调查管线，从原始凭证到纪律报告实现端到端覆盖。</div>
+      </div>
+      <div style="font-size:11pt;color:var(--text-3);font-weight:600;margin-bottom:8px;">MultiTrace 对应实现：</div>
+      <div class="scenario-match" style="gap:7px;">
+        <span class="scenario-match-item" style="font-size:10.5pt;padding:4px 10px;">价格σ异常检测（DigiKey/CCGP基准）</span>
+        <span class="scenario-match-item" style="font-size:10.5pt;padding:4px 10px;">三单比对规则引擎</span>
+        <span class="scenario-match-item" style="font-size:10.5pt;padding:4px 10px;">拆标/规避采购限额检测</span>
+        <span class="scenario-match-item" style="font-size:10.5pt;padding:4px 10px;">合同-付款-入库全链路追溯</span>
+        <span class="scenario-match-item" style="font-size:10.5pt;padding:4px 10px;">EV-ID可追溯结论报告</span>
+      </div>
+    </div>
+
+    <div class="scenario-badge" style="background:var(--text-3);font-size:10.5pt;padding:5px 14px;margin-bottom:12px;">➕ 延伸融合场景</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <!-- a) -->
+      <div style="background:#f8fafc;border:1.5px solid var(--border-2);border-radius:10px;padding:14px 16px;">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;">
+          <span style="font-size:18pt;font-weight:900;color:var(--text-3);">a)</span>
+          <span style="font-size:13pt;font-weight:800;color:var(--navy);">通信数据关联分析</span>
+        </div>
+        <div style="font-size:10.5pt;color:var(--text-3);line-height:1.65;margin-bottom:10px;">邮件/即时消息中快速定位关键人物、话题与时间点，可视化证据链，识别共谋网络</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">GPT-4o 邮件实体抽取</span>
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">通信网络关系图谱</span>
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">关键词时间线重建</span>
+        </div>
+      </div>
+      <!-- d) -->
+      <div style="background:#f8fafc;border:1.5px solid var(--border-2);border-radius:10px;padding:14px 16px;">
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;">
+          <span style="font-size:18pt;font-weight:900;color:var(--text-3);">d)</span>
+          <span style="font-size:13pt;font-weight:800;color:var(--navy);">多源事件重建与回放</span>
+        </div>
+        <div style="font-size:10.5pt;color:var(--text-3);line-height:1.65;margin-bottom:10px;">融合终端/门禁/网络/EventLog等多系统日志，在时间线视图中回放"发生了什么"并支持证据追踪</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">EventLog 4624/4663/4726</span>
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">Exabeam UEBA 时序分析</span>
+          <span style="font-size:10pt;background:var(--bg);border:1px solid var(--border-2);color:var(--text-2);padding:3px 8px;border-radius:4px;">vis.js 事件回放图</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border-radius:8px;padding:12px 16px;">
+      <div style="font-size:10.5pt;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:8px;">适用场景范围</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;">
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">🛒 采购欺诈</span>
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">🧾 费用报销舞弊</span>
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">🏠 资产挪用</span>
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">💰 行贿受贿</span>
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">📊 财务造假</span>
+        <span style="font-size:11.5pt;background:rgba(255,255,255,.12);color:white;padding:4px 10px;border-radius:4px;font-weight:600;">🔗 关联交易操控</span>
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>场景 c) 合同与交易风险洞察 · 延伸场景 a) 通信数据关联分析 · d) 多源事件重建与回放</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 — PROBLEM DEFINITION
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">问题界定 · 核心痛点</div>
+        <div class="pg-num">03</div>
+      </div>
+    </div>
+
+    <div class="sec-title" style="margin-bottom:14px;">02 · 问题界定</div>
+
+    <div style="font-size:11.5pt;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">调查对象与范围</div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:18px;font-size:11pt;color:var(--text-2);line-height:1.8;">
+      <b style="color:var(--navy);">对象：</b>中大型企业内部采购、财务、IT部门的利益输送与腐败行为<br>
+      <b style="color:var(--navy);">数据源：</b>合同/发票/ERP记录 · 邮件通信 · IT行为日志 · 市场价格基准<br>
+      <b style="color:var(--navy);">输出：</b>可追溯调查报告 + 纪律处分/司法移交证据基础
+    </div>
+
+    <div style="font-size:11.5pt;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">核心痛点（量化）</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:12px 14px;">
+        <div style="font-size:22pt;font-weight:900;color:var(--red);white-space:nowrap;line-height:1;min-width:70px;text-align:center;">12<span style="font-size:14pt;">月</span></div>
+        <div>
+          <div style="font-size:11pt;font-weight:700;color:var(--text-1);margin-bottom:2px;">欺诈<b>平均被发现滞后</b> 12 个月</div>
+          <div style="font-size:9.5pt;color:var(--text-4);">— ACFE 2024 Report to the Nations，覆盖 1,921 起案例</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 14px;">
+        <div style="font-size:22pt;font-weight:900;color:var(--amber);white-space:nowrap;line-height:1;min-width:70px;text-align:center;">30–45<span style="font-size:14pt;">天</span></div>
+        <div>
+          <div style="font-size:11pt;font-weight:700;color:var(--text-1);margin-bottom:2px;">传统调查<b>数据处理与分析阶段</b>耗时</div>
+          <div style="font-size:9.5pt;color:var(--text-4);">跨部门协调、人工核查、证据孤岛三重叠加</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:0 8px 8px 0;padding:12px 14px;">
+        <div style="font-size:22pt;font-weight:900;color:var(--amber);white-space:nowrap;line-height:1;min-width:70px;text-align:center;">3<span style="font-size:14pt;">倍</span></div>
+        <div>
+          <div style="font-size:11pt;font-weight:700;color:var(--text-1);margin-bottom:2px;">人工规则系统<b>误报率</b>约为ML系统的3倍</div>
+          <div style="font-size:9.5pt;color:var(--text-4);">— EY Oct 2025, 企业欺诈调查效率基准报告</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--text-3);border-radius:0 8px 8px 0;padding:12px 14px;">
+        <div style="font-size:22pt;font-weight:900;color:var(--text-3);white-space:nowrap;line-height:1;min-width:70px;text-align:center;">$145K</div>
+        <div>
+          <div style="font-size:11pt;font-weight:700;color:var(--text-1);margin-bottom:2px;">ACFE 2024：企业欺诈案件<b>中位损失金额</b></div>
+          <div style="font-size:9.5pt;color:var(--text-4);">其中采购舞弊占比最高，平均检测滞后12个月</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--green-pale);border:1.5px solid #86efac;border-radius:8px;padding:16px 18px;">
+      <div style="font-size:12pt;font-weight:800;color:var(--green);margin-bottom:8px;">✅ MultiTrace 解法定位</div>
+      <div style="font-size:11pt;color:var(--text-2);line-height:1.85;">
+        7个专职AI Agent <b>并行</b>处理多源数据，将30-45天<i>数据处理与分析阶段</i>压缩至<b>4-8小时</b>；<br>
+        三层HITL确保<b>所有关键结论由人类签发</b>，AI不独立作出定性判断；<br>
+        全程SHA-256证据链 + AICPA SSFS No.1报告规范，输出<b>可用于司法移交</b>的证据基础。
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>数据来源：ACFE 2024 RTTN · EY Oct 2025 · arXiv:2508.06574</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 — OVERVIEW + DEMO ACCESS
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">效率困局 · 传统 vs MultiTrace</div>
+        <div class="pg-num">04</div>
+      </div>
+    </div>
+
+    <!-- Problem / Solution -->
+    <div class="sec-title">03 · 企业内部调查的效率困局</div>
+    <div class="compare-box" style="margin-bottom:12px;">
+      <div class="compare-before">
+        <div class="compare-title">🐢 传统人工调查</div>
+        <div class="big-number">30–45天</div>
+        <div style="font-size:11pt;color:var(--text-3);margin:2px 0 6px">数据处理与分析阶段</div>
+        <div class="compare-item">跨部门协调，数据孤岛严重</div>
+        <div class="compare-item">人工统计核查，效率低、易出错</div>
+        <div class="compare-item">欺诈平均被发现滞后 <strong>12个月</strong></div>
+        <div class="compare-item">证据链完整性无法保证</div>
+        <div class="compare-item">误报率约为ML系统 <strong>3倍</strong></div>
+      </div>
+      <div class="compare-arrow">→</div>
+      <div class="compare-after">
+        <div class="compare-title">🚀 MultiTrace 方案</div>
+        <div class="big-number">4–8小时</div>
+        <div style="font-size:11pt;color:var(--text-3);margin:2px 0 6px">同等分析阶段，7 Agent 并行执行</div>
+        <div class="compare-item">统一 InvestigationState，无孤岛</div>
+        <div class="compare-item">算法自动核查 + σ 实时计算</div>
+        <div class="compare-item">持续监控，主动检测缩短至<strong>~6个月</strong></div>
+        <div class="compare-item">全程 Chain of Custody 审计链</div>
+        <div class="compare-item">FPR <strong>~2.9%</strong>（arXiv:2508.06574）</div>
+      </div>
+    </div>
+
+    <!-- Efficiency numbers -->
+    <div class="cols-3" style="margin-bottom:14px;">
+      <div class="card card-red" style="text-align:center;">
+        <div class="card-label">完整调查周期</div>
+        <div style="font-size:13pt;font-weight:900;color:var(--red);letter-spacing:-1px;">60–90天</div>
+        <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">传统方式（含立案·取证·报告）</div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:20pt;color:var(--blue)">→</div>
+      <div class="card card-green" style="text-align:center;">
+        <div class="card-label">MultiTrace 完整周期</div>
+        <div style="font-size:13pt;font-weight:900;color:var(--green);letter-spacing:-1px;">5–7天</div>
+        <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">3 个 HITL 节点 + 全自动分析管线</div>
+      </div>
+    </div>
+
+    <div class="divider" style="margin:14px 0;"></div>
+
+    <!-- ACFE Industry Data -->
+    <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:10px;">行业数据实证：欺诈检测的结构性困境（ACFE 2024 · EY 2025）</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="card" style="text-align:center;padding:14px 12px;">
+        <div class="card-label" style="font-size:8.5pt;">欺诈案件中位损失金额</div>
+        <div style="font-size:22pt;font-weight:900;color:var(--red);margin:6px 0;letter-spacing:-1px;">$145K</div>
+        <div style="font-size:9pt;color:var(--text-3);line-height:1.5;">ACFE 2024：采购舞弊占比最高<br>平均检测滞后 <strong>12 个月</strong></div>
+      </div>
+      <div class="card" style="text-align:center;padding:14px 12px;">
+        <div class="card-label" style="font-size:8.5pt;">欺诈主要发现方式</div>
+        <div style="font-size:22pt;font-weight:900;color:var(--red);margin:6px 0;letter-spacing:-1px;">43%</div>
+        <div style="font-size:9pt;color:var(--text-3);line-height:1.5;">来自内部举报人<br>传统数据分析方式仅占 <strong>6%</strong></div>
+      </div>
+      <div class="card" style="text-align:center;padding:14px 12px;">
+        <div class="card-label" style="font-size:8.5pt;">企业合规成本年均增幅</div>
+        <div style="font-size:22pt;font-weight:900;color:var(--blue);margin:6px 0;letter-spacing:-1px;">+31%</div>
+        <div style="font-size:9pt;color:var(--text-3);line-height:1.5;">EY 2025：2020–2025 年增幅<br>数字化调查工具严重滞后</div>
+      </div>
+      <div class="card" style="text-align:center;padding:14px 12px;">
+        <div class="card-label" style="font-size:8.5pt;">AI 辅助检测误报率改善</div>
+        <div style="font-size:22pt;font-weight:900;color:var(--blue);margin:6px 0;letter-spacing:-1px;">~3×</div>
+        <div style="font-size:9pt;color:var(--text-3);line-height:1.5;">人工审计误报率约为 ML 系统 3 倍<br>MultiTrace FPR <strong>~2.9%</strong>（arXiv:2508.06574）</div>
+      </div>
+    </div>
+
+    <!-- Synthesis bar -->
+    <div style="background:var(--navy);border-radius:8px;padding:13px 18px;display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:0;align-items:center;">
+      <div style="text-align:center;padding:0 10px;">
+        <div style="font-size:18pt;font-weight:900;color:#f87171;line-height:1;">30–45天</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,.75);margin-top:4px;">传统分析阶段耗时</div>
+      </div>
+      <div style="background:rgba(255,255,255,.18);height:44px;"></div>
+      <div style="text-align:center;padding:0 10px;">
+        <div style="font-size:18pt;font-weight:900;color:#4ade80;line-height:1;">4–8小时</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,.75);margin-top:4px;">MultiTrace 7-Agent 并行</div>
+      </div>
+      <div style="background:rgba(255,255,255,.18);height:44px;"></div>
+      <div style="text-align:center;padding:0 10px;">
+        <div style="font-size:18pt;font-weight:900;color:#60a5fa;line-height:1;">10×</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,.75);margin-top:4px;">调查效率跃升</div>
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>数据来源：ACFE 2024 RTTN · EY Oct 2025 · arXiv:2508.06574 · arXiv:2304.10105</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 4 — INTERACTIVE DEMO PLATFORM
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">交互演示平台 · 设计理念</div>
+        <div class="pg-num">05</div>
+      </div>
+    </div>
+
+    <div class="sec-title">04 · 交互演示平台 — 设计理念与核心功能</div>
+    <div class="sec-sub">MultiTrace 提供可在线访问的全功能演示系统，评委可直接体验完整调查流程 · multitrace-ai.netlify.app</div>
+
+    <!-- URL access banner -->
+    <div style="background:var(--navy);border-radius:10px;padding:16px 22px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,.5);margin-bottom:5px;">在线交互演示 · 无需注册 · 评委直接访问</div>
+        <div style="font-size:17pt;font-weight:900;color:#60a5fa;letter-spacing:-.3px;line-height:1;">multitrace-ai.netlify.app</div>
+        <div style="font-size:8.5pt;color:rgba(255,255,255,.6);margin-top:5px;">已通过 Netlify CI/CD 部署 · 与本 PDF 内容同步</div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:210px;">
+        <span style="font-size:8.5pt;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);padding:5px 13px;border-radius:14px;white-space:nowrap;">7 Agents</span>
+        <span style="font-size:8.5pt;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);padding:5px 13px;border-radius:14px;white-space:nowrap;">12步全流程</span>
+        <span style="font-size:8.5pt;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);padding:5px 13px;border-radius:14px;white-space:nowrap;">92% 置信度</span>
+        <span style="font-size:8.5pt;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85);padding:5px 13px;border-radius:14px;white-space:nowrap;">案例实况</span>
+      </div>
+    </div>
+
+    <!-- Core differentiators -->
+    <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:10px;">MultiTrace 的核心差异化：不只是自动化，而是可信调查</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 15px;">
+        <div style="display:flex;gap:11px;align-items:flex-start;">
+          <span style="font-size:17pt;flex-shrink:0;line-height:1.2;">🔗</span>
+          <div>
+            <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">端到端全管线</div>
+            <div style="font-size:9pt;color:var(--text-2);line-height:1.65;">从原始线索到法庭可用报告，一条完整管线。不是告警工具，而是完整调查系统。InvestigationState 统一共享，无数据孤岛。</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 15px;">
+        <div style="display:flex;gap:11px;align-items:flex-start;">
+          <span style="font-size:17pt;flex-shrink:0;line-height:1.2;">⚖️</span>
+          <div>
+            <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">法律效力设计优先</div>
+            <div style="font-size:9pt;color:var(--text-2);line-height:1.65;">SHA-256 证据链 + HITL 书面签发 + AICPA SSFS No.1 报告规范，结论可直接用于纪律处分与司法移交。</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 15px;">
+        <div style="display:flex;gap:11px;align-items:flex-start;">
+          <span style="font-size:17pt;flex-shrink:0;line-height:1.2;">🤖</span>
+          <div>
+            <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">多模态融合推理</div>
+            <div style="font-size:9pt;color:var(--text-2);line-height:1.65;">LLM + 图神经网络 + 统计异常检测三路并行，非单一规则引擎，避免盲区与误报。False Positive Rate ~2.9%（arXiv:2508.06574）。</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:9px;padding:14px 15px;">
+        <div style="display:flex;gap:11px;align-items:flex-start;">
+          <span style="font-size:17pt;flex-shrink:0;line-height:1.2;">🌐</span>
+          <div>
+            <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">双轨合规覆盖</div>
+            <div style="font-size:9pt;color:var(--text-2);line-height:1.65;">同步满足 EU AI Act Art.14（高风险 AI 强制人类监督）与国资委43号（央企合规管理），国内外双通。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 demo modules -->
+    <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:10px;">在线演示平台包含四大核心模块</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div style="background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:13px 14px;">
+        <div style="font-size:16pt;font-weight:900;color:var(--blue);margin-bottom:5px;line-height:1;">①</div>
+        <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">7-Agent 完整架构</div>
+        <div style="font-size:9pt;color:var(--text-2);line-height:1.6;">ReAct 推理轨迹可视化、工具调用链展示、每个 Agent 的输入 / 输出 Schema，可逐层点击展开查看。</div>
+      </div>
+      <div style="background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:13px 14px;">
+        <div style="font-size:16pt;font-weight:900;color:var(--blue);margin-bottom:5px;line-height:1;">②</div>
+        <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">12步流程实况</div>
+        <div style="font-size:9pt;color:var(--text-2);line-height:1.6;">每步产出物可点击展开，HITL 决策节点可交互模拟，清晰展示人类审批权责边界与书面签发机制。</div>
+      </div>
+      <div style="background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:13px 14px;">
+        <div style="font-size:16pt;font-weight:900;color:var(--blue);margin-bottom:5px;line-height:1;">③</div>
+        <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">知识图谱可视化</div>
+        <div style="font-size:9pt;color:var(--text-2);line-height:1.6;">vis.js 9.1.9 渲染 25 节点关系图，支持拖拽交互，Louvain 社群检测 Q=0.74，可疑社群高亮显示。</div>
+      </div>
+      <div style="background:#f8fafc;border:1.5px solid var(--border);border-radius:8px;padding:13px 14px;">
+        <div style="font-size:16pt;font-weight:900;color:var(--blue);margin-bottom:5px;line-height:1;">④</div>
+        <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">Greenbridge 案例实况</div>
+        <div style="font-size:9pt;color:var(--text-2);line-height:1.6;">完整证据清单、价格异常分析图表、调查报告全文，结构化模拟数据，接口完全对应真实 API 文档。</div>
+      </div>
+    </div>
+
+    <!-- Data disclaimer (green box) -->
+    <div style="background:var(--green-pale);border:1.5px solid #86efac;border-radius:8px;padding:12px 16px;">
+      <div style="font-size:10pt;font-weight:800;color:var(--green);margin-bottom:5px;">✅ 数据与部署说明</div>
+      <div style="font-size:9pt;color:var(--text-2);line-height:1.7;">
+        演示平台使用 <strong>结构化模拟数据</strong>（Operation Greenbridge），接口设计完全对应真实 API 文档（SAP OData、金蝶 openapi、DigiKey REST、CCGP V1.0）。
+        网站通过 Netlify CI/CD 持续部署，内容与本 PDF 保持同步，评委可直接访问验证所有声明。
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #86efac;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:8.5pt;font-weight:700;color:var(--text-3);">⚡ 如在线访问受限，可本地运行：</span>
+        <span style="font-size:8.5pt;color:var(--text-3);">解压附件后在</span>
+        <code style="font-size:8.5pt;background:rgba(0,0,0,.07);padding:1px 6px;border-radius:3px;font-family:monospace;color:var(--navy);">frontend/</code>
+        <span style="font-size:8.5pt;color:var(--text-3);">目录执行</span>
+        <code style="font-size:8.5pt;background:rgba(0,0,0,.07);padding:1px 6px;border-radius:3px;font-family:monospace;color:var(--navy);">python3 -m http.server 7654</code>
+        <span style="font-size:8.5pt;color:var(--text-3);">，访问</span>
+        <code style="font-size:8.5pt;background:rgba(0,0,0,.07);padding:1px 6px;border-radius:3px;font-family:monospace;color:var(--navy);">localhost:7654</code>
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>在线演示：multitrace-ai.netlify.app · 数据为结构化模拟，接口对应真实 API 文档</span>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 — SYSTEM ARCHITECTURE
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">系统架构 · 7-Agent 协作架构</div>
+        <div class="pg-num">06</div>
+      </div>
+    </div>
+
+    <div class="sec-title">05 · 7-Agent 三层协作架构</div>
+    <div class="sec-sub">基于 LangGraph StateGraph 构建，7 个专职 Agent 共享 InvestigationState，通过条件边驱动完整调查管线</div>
+
+    <div class="arch-diagram" style="margin-bottom:12px;">
+      <!-- Layer 1: Orchestrator -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Layer 1 — 编排层 · HITL 守门人</div>
+        <div class="arch-agents l1">
+          <div class="arch-agent orch">
+            <div class="arch-agent-icon">🎯</div>
+            <div>
+              <div class="arch-agent-name">Agent 0 — 总指挥（Orchestrator）</div>
+              <div class="arch-agent-role">
+                LangGraph StateGraph 编排核心 · 管理 InvestigationState 全局状态 ·
+                负责 Step 1（立案）/ Step 8（汇总）/ Step 12（移交）三个 HITL Tier 1 阻断节点 ·
+                接收 interrupt() 原语，书面授权后 resume() 继续执行
+              </div>
+              <span class="arch-agent-step">Step 1 · Step 8 · Step 12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">↓ &nbsp; 并行分发至四个分析 Agent</div>
+
+      <!-- Layer 2: Analysis -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Layer 2 — 分析层 · 并行执行（Steps 2–7）</div>
+        <div class="arch-agents l2">
+          <div class="arch-agent analysis">
+            <div class="arch-agent-name">📄 文档情报官</div>
+            <div class="arch-agent-role">GPT-4o ReAct · 多格式文档解析 · SHA-256 证据封存 · Chain of Custody 写入</div>
+            <span class="arch-agent-step">Steps 2–4</span>
+          </div>
+          <div class="arch-agent analysis">
+            <div class="arch-agent-name">🕸 实体图谱官</div>
+            <div class="arch-agent-role">Levenshtein+LLM 双层实体解析 · IBM i2 ELP 图谱 · Louvain 社群检测 Q=0.74</div>
+            <span class="arch-agent-step">Steps 5–6</span>
+          </div>
+          <div class="arch-agent analysis">
+            <div class="arch-agent-name">📊 统计核查官</div>
+            <div class="arch-agent-role">DigiKey/CCGP 实时查询 · z-score 计算 · 三单比对（合同/付款/入库）</div>
+            <span class="arch-agent-step">Step 7a</span>
+          </div>
+          <div class="arch-agent analysis">
+            <div class="arch-agent-name">👁 行为画像官</div>
+            <div class="arch-agent-role">Exabeam UEBA 接入 · 时序异常检测 · 登录/删除/下载行为 σ 偏离计算</div>
+            <span class="arch-agent-step">Step 7b</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">↓ &nbsp; 汇聚至综合层</div>
+
+      <!-- Layer 3: Synthesis -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Layer 3 — 综合层 · 假设验证与报告</div>
+        <div class="arch-agents l3">
+          <div class="arch-agent synth">
+            <div class="arch-agent-name">🔬 假设验证官</div>
+            <div class="arch-agent-role">
+              ACFE FTA 三轮迭代 · Devil's Advocate 对抗分析 ·
+              置信度递进 65%→82%→92% · Tier 2 HITL 人工确认主假设
+            </div>
+            <span class="arch-agent-step">Steps 8–9</span>
+          </div>
+          <div class="arch-agent synth">
+            <div class="arch-agent-name">📋 合规报告官</div>
+            <div class="arch-agent-role">
+              AICPA SSFS No.1 语言合规检查 · EV-ID 可追溯证据链 ·
+              Chain of Custody 封存（Step 10）· Tier 2 HITL 报告审查
+            </div>
+            <span class="arch-agent-step">Steps 10–12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 12-step flow -->
+
+    <div class="step-flow" style="margin-bottom:8px;">
+      <!-- Steps 1-12 -->
+      <div class="step-node">
+        <div class="step-circle hitl-1">1</div>
+        <div class="step-label"><strong>立案</strong><br>Tier 1<br>阻断</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">2</div>
+        <div class="step-label"><strong>证据</strong><br>保全</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">3</div>
+        <div class="step-label"><strong>数据</strong><br>摄取</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">4</div>
+        <div class="step-label"><strong>数据</strong><br>清洗</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">5</div>
+        <div class="step-label"><strong>实体</strong><br>解析</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">6</div>
+        <div class="step-label"><strong>图谱</strong><br>构建</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">7</div>
+        <div class="step-label"><strong>统计</strong><br>+行为</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle hitl-1">8</div>
+        <div class="step-label"><strong>汇总</strong><br>Tier 1<br>阻断</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle hitl-2">9</div>
+        <div class="step-label"><strong>假设</strong><br>Tier 2<br>72h</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle auto">10</div>
+        <div class="step-label"><strong>CoC</strong><br>封存</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle hitl-2">11</div>
+        <div class="step-label"><strong>报告</strong><br>Tier 2<br>审查</div>
+      </div>
+      <div class="step-node">
+        <div class="step-circle hitl-1">12</div>
+        <div class="step-label"><strong>移交</strong><br>Tier 1<br>阻断</div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div style="display:flex;gap:12px;font-size:10pt;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--red-pale);border:1.5px solid var(--red);flex-shrink:0;"></div>
+        <span><strong>Tier 1 阻断</strong> — 书面授权方可执行（Step 1·8·12）</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--amber-pale);border:1.5px solid var(--amber);flex-shrink:0;"></div>
+        <span><strong>Tier 2 审阅</strong> — 72h 审查窗口（Step 9·11）</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--blue-pale);border:1.5px solid var(--blue-mid);flex-shrink:0;"></div>
+        <span><strong>全自动</strong> — Tier 3，结果写入审计日志（Steps 2–7·10）</span>
+      </div>
+    </div>
+
+    <!-- Key data flow -->
+    <div class="card card-blue" style="margin-top:auto;">
+      <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-bottom:5px;">⚡ 核心数据流</div>
+      <div style="font-size:10pt;color:var(--text-2);line-height:1.7;font-family:'Courier New',monospace;">
+        原始文档（email/ERP/合同/日志）
+        → Agent 1 摄取+封存（SHA-256）
+        → Agent 2 实体解析+图谱
+        → Agent 3/4 并行统计+行为分析
+        → Orchestrator Step 8 汇总（Tier 1 ⏸）
+        → Agent 5 假设验证（Tier 2 ⏸）
+        → Agent 6 报告生成（Tier 2 ⏸）
+        → Orchestrator Step 12 移交（Tier 1 ⏸）
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>架构依据：LangGraph StateGraph · EU AI Act Art. 14 · arXiv:2503.13657 并行 Agent 架构</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 5 — 12-STEP INVESTIGATION FLOW
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">12步调查流程 · 全流程详解</div>
+        <div class="pg-num">07</div>
+      </div>
+    </div>
+
+    <div style="font-size:11pt;font-weight:800;color:var(--navy);margin-bottom:5px;">06 · 12步调查流程 — 7-Agent 责任矩阵</div>
+    <div style="display:flex;gap:16px;font-size:10.5pt;color:var(--text-3);margin-bottom:8px;align-items:center;">
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--red-pale);border:1.5px solid var(--red);display:inline-block;flex-shrink:0;"></span><strong style="color:var(--text-2);">Tier 1 阻断</strong> — 书面授权后执行</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--amber-pale);border:1.5px solid var(--amber);display:inline-block;flex-shrink:0;"></span><strong style="color:var(--text-2);">Tier 2 审阅</strong> — 72h 人工审查</span>
+      <span style="display:flex;align-items:center;gap:4px;"><span style="width:9px;height:9px;border-radius:50%;background:var(--blue-pale);border:1.5px solid var(--blue-mid);display:inline-block;flex-shrink:0;"></span><strong style="color:var(--text-2);">全自动 Tier 3</strong> — 写入审计日志</span>
+    </div>
+
+    <!-- Swimlane helper styles (inline) -->
+    <div style="display:flex;flex-direction:column;gap:5px;">
+
+      <!-- ── Agent 0 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:var(--blue-pale);border:1.5px solid var(--blue-mid);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:16pt;font-weight:900;color:var(--blue);line-height:1;">A0</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.2;">指挥协调<br>Orchestrator</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">管线编排 · HITL 守门人</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;">
+          <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:var(--red-pale);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:var(--red);flex-shrink:0;">1</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">立案授权</span>
+              <span style="font-size:11pt;background:var(--red);color:white;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap;">T1 阻断</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">提交案件摘要，生成 INV-ID，书面授权启动管线</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ INV-xxxx · 授权凭证</div>
+          </div>
+          <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:var(--red-pale);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:var(--red);flex-shrink:0;">8</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">中期汇总</span>
+              <span style="font-size:11pt;background:var(--red);color:white;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap;">T1 阻断</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">整合四路分析结果，审核置信度，书面授权继续</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 中期摘要 · 授权记录</div>
+          </div>
+          <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:var(--red-pale);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:var(--red);flex-shrink:0;">12</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">移交封存</span>
+              <span style="font-size:11pt;background:var(--red);color:white;padding:1px 4px;border-radius:2px;font-weight:700;white-space:nowrap;">T1 阻断</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">最终签发，PDF+公证时间戳，移交法务/纪检</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 最终报告包 · 移交凭证</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Agent 1 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:16pt;font-weight:900;color:#b45309;line-height:1;">A1</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.2;">文档分析<br>Document Intel</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">证据保全 · 摄取 · 清洗</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;">
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #fcd34d;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#92400e;flex-shrink:0;">2</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">证据保全</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">SHA-256 哈希固证，写入 Chain of Custody（ev_id · chain_seq）</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 哈希台账 · CoC 序列</div>
+          </div>
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #fcd34d;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#92400e;flex-shrink:0;">3</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">数据摄取</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">SAP OData / 用友 OAuth2 / Exchange PST / Coremail EML 多源拉取</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 统一格式数据集</div>
+          </div>
+          <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #fcd34d;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#92400e;flex-shrink:0;">4</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">数据清洗</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">去重 · 标准化 · 时区对齐；Apache Tika 解析 PDF/DOCX/XLS</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 清洁结构化数据集</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Agent 2 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:16pt;font-weight:900;color:#6d28d9;line-height:1;">A2</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.2;">实体图谱<br>Knowledge Graph</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">实体解析 · 关系图谱</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+          <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #a78bfa;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#6d28d9;flex-shrink:0;">5</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">实体解析</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">Levenshtein ≤ 2 + Transformer NER 双路抽取，跨文档实体消歧合并</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 实体字典 · 消歧映射表</div>
+          </div>
+          <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #a78bfa;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#6d28d9;flex-shrink:0;">6</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">图谱构建</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">Neo4j + Louvain Q=0.74，vis.js 9.1.9 可视化，IBM i2 ELP 兼容</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 关系图谱 · 社区报告</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Agent 3 + 4 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:#f0fdf4;border:1.5px solid #a7f3d0;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:14pt;font-weight:900;color:#065f46;line-height:1;">A3+A4</div>
+          <div style="font-size:10pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.3;">统计异常<br>+ 行为基线<br><span style="color:#065f46;font-size:10.5pt;">并行执行</span></div>
+        </div>
+        <div style="flex:1;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:7px;padding:8px 12px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div style="width:18px;height:18px;border-radius:50%;background:white;border:2px solid #34d399;display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#065f46;flex-shrink:0;">7</div>
+            <span style="font-size:10.5pt;font-weight:800;color:var(--navy);">统计 + 行为分析（并行）</span>
+            <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动 · 并行</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;border-left:2px solid #34d399;padding-left:6px;"><strong style="color:#065f46;">Agent 3 统计异常：</strong>对标 DigiKey REST / CCGP V1.0 计算价格 z-score（σ &gt; 2.5 预警），三单比对（合同/付款/入库）<br>→ 价格偏离报告</div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;border-left:2px solid #fb923c;padding-left:6px;"><strong style="color:#c2410c;">Agent 4 行为基线：</strong>Exabeam UEBA（18σ 阈值），Win EventLog 4624/4663/4726 时序分析，邮件外发检测<br>→ 行为异常信号清单</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Agent 5 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:#fef2f2;border:1.5px solid #fca5a5;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:16pt;font-weight:900;color:#dc2626;line-height:1;">A5</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.2;">假设生成<br>Hypothesis</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">ACFE FTA · Devil's Adv.</div>
+        </div>
+        <div style="flex:1;background:#fffbeb;border:1px solid #fcd34d;border-radius:7px;padding:8px 12px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div style="width:18px;height:18px;border-radius:50%;background:var(--amber-pale);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#92400e;flex-shrink:0;">9</div>
+            <span style="font-size:10.5pt;font-weight:800;color:var(--navy);">假设验证</span>
+            <span style="font-size:11pt;background:var(--amber);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">Tier 2 · 72h 审查</span>
+          </div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">ACFE FTA 三轮迭代（65% → 82% → 92%）；Devil's Advocate 模式对抗验证（arXiv:2308.00352），消除确认偏误；调查员在 72h 窗口内确认主假设并映射支撑证据</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">→ 主假设报告 · 证据映射表 · 置信度 92%</div>
+        </div>
+      </div>
+
+      <!-- ── Agent 6 ── -->
+      <div style="display:flex;gap:6px;align-items:stretch;">
+        <div style="width:112px;flex-shrink:0;background:var(--bg);border:1.5px solid var(--border-2);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:16pt;font-weight:900;color:var(--navy);line-height:1;">A6</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin-top:2px;line-height:1.2;">报告生成<br>Report Gen</div>
+          <div style="font-size:10pt;color:var(--text-3);margin-top:3px;">CoC封存 · AICPA报告</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+          <div style="background:var(--bg);border:1px solid var(--border-2);border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:var(--blue-pale);border:2px solid var(--blue-mid);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:var(--blue);flex-shrink:0;">10</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">证据链封存</span>
+              <span style="font-size:11pt;background:var(--blue-mid);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">全自动</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">终末 SHA-256 闭合验证，CoC 序列号连续性检查，证据包不可篡改封存</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ CoC 终末包 · 完整性报告</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border-2);border-radius:7px;padding:7px 9px;">
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">
+              <div style="width:18px;height:18px;border-radius:50%;background:var(--amber-pale);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11pt;font-weight:900;color:#92400e;flex-shrink:0;">11</div>
+              <span style="font-size:10pt;font-weight:800;color:var(--navy);">报告审查</span>
+              <span style="font-size:11pt;background:var(--amber);color:white;padding:1px 4px;border-radius:2px;font-weight:700;">Tier 2 · 72h</span>
+            </div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.55;">生成 AICPA SSFS No.1 结构化报告草稿，合规官 72h 窗口内审阅修订</div>
+            <div style="font-size:10pt;color:var(--text-3);margin-top:2px;">→ 审定草稿 · 合规官签注</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>场景 c) 合同与交易风险洞察 · 延伸场景 a) 通信数据关联分析 · d) 多源事件重建与回放</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 6 — AGENT TECH DETAIL PART 1
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">Agent 技术详解（上）</div>
+        <div class="pg-num">08</div>
+      </div>
+    </div>
+
+    <div style="font-size:11pt;font-weight:800;color:var(--navy);margin-bottom:8px;">07 · Agent 核心技术实现（Agent 0 · 1 · 2）</div>
+
+    <!-- Agent 0: Orchestrator — full width -->
+    <div class="agent-detail-card orch" style="margin-bottom:8px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="min-width:110px;">
+          <div style="font-size:11pt;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;">Agent 0</div>
+          <div style="font-size:10.5pt;font-weight:800;color:var(--navy);margin:2px 0;">指挥协调 Agent</div>
+          <div style="font-size:10.5pt;color:var(--text-3);">Orchestrator</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+          <div>
+            <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-bottom:3px;">核心框架</div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+              · LangGraph <code style="background:#e0e7ff;padding:1px 3px;border-radius:2px;">StateGraph</code><br>
+              · 全局状态 <code style="background:#e0e7ff;padding:1px 3px;border-radius:2px;">InvestigationState</code><br>
+              · <code style="background:#e0e7ff;padding:1px 3px;border-radius:2px;">interrupt()</code> API 触发 HITL<br>
+              · PostgreSQL Checkpoint 持久化
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-bottom:3px;">调度策略</div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+              · DAG 有向图拓扑排序依赖解析<br>
+              · Steps 2–7 全自动并行执行<br>
+              · 置信度低于阈值自动上报<br>
+              · Devil's Advocate 双路验证
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-bottom:3px;">HITL 触发点</div>
+            <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+              · Tier 1（阻断）：Step 1, 8, 12<br>
+              · Tier 2（72h 审核）：Step 9, 11<br>
+              · Tier 3（自动）：Step 2–7, 10<br>
+              · 合规依据：EU AI Act Art.14
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent 1 & 2 — 2 columns -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+      <!-- Agent 1: 文档分析 -->
+      <div class="agent-detail-card intel">
+        <div style="font-size:11pt;font-weight:800;color:#b45309;text-transform:uppercase;letter-spacing:.5px;">Agent 1 · 文档分析</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Document Intelligence Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · Apache Tika 多格式提取（PDF / DOCX / XLS）<br>
+            · 7-Field SHA-256 证据链字段：<br>
+            &emsp;<code style="font-size:10pt;background:#fef3c7;padding:1px 3px;border-radius:2px;">ev_id · sha256 · timestamp · tool</code><br>
+            &emsp;<code style="font-size:10pt;background:#fef3c7;padding:1px 3px;border-radius:2px;">operator · case_id · chain_seq</code><br>
+            · 正则 + Transformer NER 双路实体抽取<br>
+            · 时间戳篡改检测（文件元数据交叉对比）
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">合规支撑</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · SHA-256 Chain of Custody → AICPA SSFS No.1<br>
+            · 每步操作留痕，支持法庭举证标准
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 2: 实体图谱 -->
+      <div class="agent-detail-card graph">
+        <div style="font-size:11pt;font-weight:800;color:#6d28d9;text-transform:uppercase;letter-spacing:.5px;">Agent 2 · 实体图谱</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Knowledge Graph Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · Neo4j 图数据库，Cypher 多跳查询<br>
+            · Levenshtein 距离 ≤ 2 模糊实体匹配<br>
+            · Louvain 社区检测（Q = 0.74，示范集）<br>
+            · vis.js 9.1.9 实时关系图渲染<br>
+            · IBM i2 ELP 格式兼容输出<br>
+            · 多跳关联路径推理（MATCH 链式查询）
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">输出示例</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · 供应商–壳公司–个人隐性关联网络<br>
+            · 法人 / 联系人重叠识别（3 层跳数）
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>场景 c) 合同与交易风险洞察 · 延伸场景 a) 通信数据关联分析 · d) 多源事件重建与回放</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 7 — AGENT TECH DETAIL PART 2
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">Agent 技术详解（下）</div>
+        <div class="pg-num">09</div>
+      </div>
+    </div>
+
+    <div style="font-size:11pt;font-weight:800;color:var(--navy);margin-bottom:8px;">08 · Agent 核心技术实现（Agent 3 · 4 · 5 · 6）</div>
+
+    <!-- 2×2 grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+      <!-- Agent 3: 统计异常 -->
+      <div class="agent-detail-card stat">
+        <div style="font-size:11pt;font-weight:800;color:#065f46;text-transform:uppercase;letter-spacing:.5px;">Agent 3 · 统计异常检测</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Statistical Anomaly Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · Z-score 标准化（σ &gt; 2.5 触发预警）<br>
+            · 价格基准多源对标：<br>
+            &emsp;· DigiKey REST API（实时元器件报价）<br>
+            &emsp;· CCGP V1.0（中国政府采购数据）<br>
+            &emsp;· LCSC / CECA 备案价格交叉验证<br>
+            · 历史分位数偏离分析（P95 基线）<br>
+            · 虚假供应商注册模式识别
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">典型发现</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · 采购单价偏离市价均值 &gt; 3.2σ<br>
+            · 供应商 D02 报价超出基准 +47%
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 4: 行为基线 -->
+      <div class="agent-detail-card behav">
+        <div style="font-size:11pt;font-weight:800;color:#9a3412;text-transform:uppercase;letter-spacing:.5px;">Agent 4 · 行为基线</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Behavioral Baseline Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · Exabeam UEBA 集成（异常阈值 18σ）<br>
+            · Windows EventLog 精细分析：<br>
+            &emsp;· 4624 登录成功 / 4726 账户删除<br>
+            &emsp;· 4663 文件对象访问审计<br>
+            · Coremail EML + Exchange eDiscovery PST<br>
+            · 异常时段访问模式检测<br>
+            · 敏感词 / 外发邮件语义扫描
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">典型发现</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · 凌晨 2:17 非工作时段 ERP 大量导出<br>
+            · 个人邮箱外发采购数据 3 次
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 5: 假设生成 -->
+      <div class="agent-detail-card hypo">
+        <div style="font-size:11pt;font-weight:800;color:#991b1b;text-transform:uppercase;letter-spacing:.5px;">Agent 5 · 假设生成</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Hypothesis Generation Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · ACFE FTA 三轮迭代（系统自定义估算）：<br>
+            &emsp;· Round 1：初始假设集 → 65% 置信<br>
+            &emsp;· Round 2：交叉验证精化 → 82%<br>
+            &emsp;· Round 3：全链路闭合验证 → 92%<br>
+            · Devil's Advocate 对抗模式（arXiv:2308.00352）<br>
+            · 假设对抗验证，消除确认偏误<br>
+            · 三维加权置信公式融合输出
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">置信公式</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · 0.90×35% + 0.95×40% + 0.88×25% = <strong>92%</strong><br>
+            · 文档智能 · 实体图谱 · 行为异常三维加权
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 6: 报告生成 -->
+      <div class="agent-detail-card report">
+        <div style="font-size:11pt;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;">Agent 6 · 报告生成</div>
+        <div style="font-size:10pt;font-weight:800;color:var(--navy);">Report Generation Agent</div>
+        <div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);">关键技术</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.7;">
+            · AICPA SSFS No.1 结构化报告框架<br>
+            · 终末证据链哈希闭合验证<br>
+            · 国资委令第43号合规章节自动生成<br>
+            · 三语输出（中文主报 + 英文执行摘要）<br>
+            · PDF 封存 + 时间戳公证附件打包<br>
+            · 人类签字页预留（HITL Tier 1 Step 12）
+          </div>
+          <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-top:3px;">输出物</div>
+          <div style="font-size:10.5pt;color:var(--text-2);line-height:1.6;">
+            · 调查报告正文 + 证据链附录包<br>
+            · 可作为纪律处分 / 司法移交依据
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>场景 c) 合同与交易风险洞察 · 延伸场景 a) 通信数据关联分析 · d) 多源事件重建与回放</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 8 — DATA INTEGRATION ARCHITECTURE
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo"><div class="pg-logo-box">MT</div><div class="pg-logo-name">MultiTrace</div></div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">数据集成架构</div>
+        <div class="pg-num">10</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:8px;">
+      <div style="font-size:11pt;font-weight:800;color:var(--navy);margin-bottom:3px;">09 · 四层数据集成架构</div>
+      <div style="font-size:6.8pt;color:var(--text-3);">示范案例使用结构化模拟数据；实际部署通过以下标准连接器对接企业真实系统，所有接口均有公开文档支撑。</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:7px;">
+
+      <!-- Layer 1 -->
+      <div class="data-layer l1" style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="data-layer-num" style="color:#1d4ed8;">L1</div>
+        <div class="data-layer-body">
+          <div class="data-layer-title">内部 ERP / 业务系统（财务 · 采购 · 合同）</div>
+          <div class="data-layer-items">
+            <div class="data-item">
+              <div class="data-item-label">SAP ERP</div>
+              <div class="data-item-desc">OData v4 / RFC BAPI · 采购单 ME2N · 凭证 FB03</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">用友 NC / U8</div>
+              <div class="data-item-desc">OAuth 2.0 REST · 供应商档案 · 合同台账 · 付款流水</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">金蝶 Cloud</div>
+              <div class="data-item-desc">openapi v3 · 应付账款 · 审批流水 · 采购订单</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">合同系统</div>
+              <div class="data-item-desc">PDF / DOCX 原件 · Apache Tika 解析 · SHA-256 固证</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 2 -->
+      <div class="data-layer l2" style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="data-layer-num" style="color:#15803d;">L2</div>
+        <div class="data-layer-body">
+          <div class="data-layer-title">外部价格基准（市场报价 · 政府采购 · 供应商资质）</div>
+          <div class="data-layer-items">
+            <div class="data-item">
+              <div class="data-item-label">DigiKey REST</div>
+              <div class="data-item-desc">实时电子元器件报价 · 库存 · 型号规格核验</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">CCGP V1.0</div>
+              <div class="data-item-desc">中国政府采购网 · 中标价格 · 采购公告数据</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">LCSC / 立创</div>
+              <div class="data-item-desc">元器件分销报价 · 批量阶梯价格交叉核验</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">CECA 备案</div>
+              <div class="data-item-desc">合同备案价格区间 · 行业均值偏离分析</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 3 -->
+      <div class="data-layer l3" style="display:flex;align-items:flex-start;gap:12px;">
+        <div class="data-layer-num" style="color:#c2410c;">L3</div>
+        <div class="data-layer-body">
+          <div class="data-layer-title">通信 · 访问日志 · 行为数据</div>
+          <div class="data-layer-items">
+            <div class="data-item">
+              <div class="data-item-label">Exchange</div>
+              <div class="data-item-desc">eDiscovery PST · 合规归档 · 外发邮件检测</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">Coremail</div>
+              <div class="data-item-desc">EML 批量解析 · 附件提取 · 语义扫描</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">Win EventLog</div>
+              <div class="data-item-desc">4624 登录 · 4663 文件访问 · 4726 账户删除</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">SIEM / Exabeam</div>
+              <div class="data-item-desc">UEBA 行为基线 · 18σ 异常阈值 · 时序分析</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layer 4 -->
+      <div class="data-layer l4" style="display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border-2);">
+        <div class="data-layer-num" style="color:var(--navy);">L4</div>
+        <div class="data-layer-body">
+          <div class="data-layer-title">分析引擎 · 持久化存储 · 输出物</div>
+          <div class="data-layer-items">
+            <div class="data-item">
+              <div class="data-item-label">Neo4j Graph</div>
+              <div class="data-item-desc">Louvain 社区检测 · 多跳推理 · IBM i2 兼容</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">PostgreSQL</div>
+              <div class="data-item-desc">LangGraph Checkpoint · 案件状态 · 审计日志</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">SHA-256 CoC</div>
+              <div class="data-item-desc">7-Field 证据链 · 不可篡改 · AICPA SSFS No.1</div>
+            </div>
+            <div class="data-item">
+              <div class="data-item-label">调查报告</div>
+              <div class="data-item-desc">AICPA 结构 · 国资委令第43号合规 · PDF 封存</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>场景 c) 合同与交易风险洞察 · 延伸场景 a) 通信数据关联分析 · d) 多源事件重建与回放</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 9 — CORE DESIGN PRINCIPLES
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">三大核心设计承诺</div>
+        <div class="pg-num">11</div>
+      </div>
+    </div>
+
+    <div class="sec-title">10 · 三大核心设计承诺 — 效率、可信、合规</div>
+
+    <div class="cols-3" style="margin-bottom:14px;align-items:start;">
+
+      <!-- Pillar 1: HITL -->
+      <div>
+        <div style="font-size:10.5pt;font-weight:900;color:var(--navy);border-bottom:2px solid var(--blue);padding-bottom:5px;margin-bottom:8px;">
+          🔒 三层人机协同控制
+        </div>
+        <div style="font-size:10pt;color:var(--text-3);margin-bottom:8px;line-height:1.5;">
+          AI 执行分析，人类掌控判断。任何关键结论均须专业人员书面审查签发，AI 不独立作出定性结论。
+        </div>
+        <div class="hitl-tier t1">
+          <div class="hitl-tier-header">
+            <span class="hitl-tier-badge">Tier 1</span>
+            <span class="hitl-tier-name">阻断式授权</span>
+          </div>
+          <div class="hitl-tier-desc">未获书面授权，流程完全停止。任何拒绝立即归档封存。</div>
+          <div class="hitl-tier-steps">节点：Step 1 立案 · Step 8 汇总 · Step 12 移交</div>
+        </div>
+        <div class="hitl-tier t2">
+          <div class="hitl-tier-header">
+            <span class="hitl-tier-badge">Tier 2</span>
+            <span class="hitl-tier-name">专业判断确认</span>
+          </div>
+          <div class="hitl-tier-desc">72小时审查窗口，可批准 / 退回补充 / 推翻结论。</div>
+          <div class="hitl-tier-steps">节点：Step 9 假设确认 · Step 11 报告审查</div>
+        </div>
+        <div class="hitl-tier t3">
+          <div class="hitl-tier-header">
+            <span class="hitl-tier-badge">Tier 3</span>
+            <span class="hitl-tier-name">全自动执行</span>
+          </div>
+          <div class="hitl-tier-desc">所有技术处理步骤 AI 自动完成，每步结果写入带时间戳审计日志。</div>
+          <div class="hitl-tier-steps">节点：Steps 2–7 · Step 10 封存</div>
+        </div>
+        <div style="margin-top:6px;font-size:11pt;color:var(--text-4);border-top:1px solid var(--border);padding-top:5px;">
+          法律依据：EU AI Act Art. 14 高风险 AI 系统强制人类监督条款
+        </div>
+      </div>
+
+      <!-- Pillar 2: Confidence -->
+      <div>
+        <div style="font-size:10.5pt;font-weight:900;color:var(--navy);border-bottom:2px solid var(--blue);padding-bottom:5px;margin-bottom:8px;">
+          📊 多源证据置信度量化
+        </div>
+        <div style="font-size:10pt;color:var(--text-3);margin-bottom:8px;line-height:1.5;">
+          三条独立证据线加权汇总。非单一数据源判断，防止误报与漏报，结论完全可追溯。
+        </div>
+
+        <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-bottom:5px;">加权置信度公式</div>
+        <div class="conf-formula" style="margin-bottom:8px;">
+          <table style="width:100%;border-collapse:collapse;font-size:10.5pt;">
+            <tr>
+              <td style="white-space:nowrap;padding:3px 0;color:var(--text-2);">A · 通讯证据</td>
+              <td style="white-space:nowrap;color:var(--text-3);padding:3px 8px;text-align:center;">× 35%</td>
+              <td style="white-space:nowrap;color:var(--text-2);padding:3px 0;text-align:right;">0.90&thinsp;×&thinsp;0.35 <b style="color:var(--navy);margin-left:4px;">= 0.315</b></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;padding:3px 0;color:var(--text-2);">B · 合同财务</td>
+              <td style="white-space:nowrap;color:var(--text-3);padding:3px 8px;text-align:center;">× 40%</td>
+              <td style="white-space:nowrap;color:var(--text-2);padding:3px 0;text-align:right;">0.95&thinsp;×&thinsp;0.40 <b style="color:var(--navy);margin-left:4px;">= 0.380</b></td>
+            </tr>
+            <tr>
+              <td style="white-space:nowrap;padding:3px 0;color:var(--text-2);">C · IT 行为日志</td>
+              <td style="white-space:nowrap;color:var(--text-3);padding:3px 8px;text-align:center;">× 25%</td>
+              <td style="white-space:nowrap;color:var(--text-2);padding:3px 0;text-align:right;">0.88&thinsp;×&thinsp;0.25 <b style="color:var(--navy);margin-left:4px;">= 0.220</b></td>
+            </tr>
+            <tr style="border-top:1px solid var(--border-2);">
+              <td colspan="2" style="font-size:11pt;font-weight:800;color:var(--navy);padding-top:5px;">综合置信度</td>
+              <td style="font-size:14pt;font-weight:900;color:var(--green);text-align:right;line-height:1;padding-top:4px;white-space:nowrap;">≈ 92%</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="font-size:10.5pt;font-weight:700;color:var(--navy);margin-bottom:5px;">三轮迭代递进</div>
+        <div style="margin-bottom:4px;">
+          <div class="sigma-row-header">
+            <span class="sigma-label">第一轮（统计异常输入）</span>
+            <span class="sigma-val">65%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill-blue" style="width:65%"></div></div>
+        </div>
+        <div style="margin-bottom:4px;">
+          <div class="sigma-row-header">
+            <span class="sigma-label">第二轮（三单比对 + 关联图谱）</span>
+            <span class="sigma-val">82%</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill-blue" style="width:82%"></div></div>
+        </div>
+        <div style="margin-bottom:8px;">
+          <div class="sigma-row-header">
+            <span class="sigma-label">第三轮（Devil's Advocate 反驳失败）</span>
+            <span class="sigma-val" style="color:var(--green)">92% ✓</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill-green" style="width:92%"></div></div>
+        </div>
+        <div style="font-size:11pt;color:var(--text-4);border-top:1px solid var(--border);padding-top:5px;">
+          权重参照 ACFE FEM 2022 证据分级框架；置信度递进为系统自定义迭代估算
+        </div>
+      </div>
+
+      <!-- Pillar 3: Compliance -->
+      <div>
+        <div style="font-size:10.5pt;font-weight:900;color:var(--navy);border-bottom:2px solid var(--blue);padding-bottom:5px;margin-bottom:8px;">
+          ⚖️ 双重合规框架锚定
+        </div>
+        <div style="font-size:10pt;color:var(--text-3);margin-bottom:8px;line-height:1.5;">
+          国际 AI 治理标准与中国企业合规要求双重覆盖，调查结论可作为纪律处分与司法移交的证据基础。
+        </div>
+        <div class="compliance-item">
+          <div class="compliance-flag">🇪🇺</div>
+          <div>
+            <div class="compliance-name">EU AI Act Art. 14</div>
+            <div class="compliance-desc">高风险 AI 系统强制人类监督 — HITL 三层机制直接对应，2025年全面生效</div>
+          </div>
+        </div>
+        <div class="compliance-item">
+          <div class="compliance-flag">🇨🇳</div>
+          <div>
+            <div class="compliance-name">国资委令第43号（2022）</div>
+            <div class="compliance-desc">《中央企业合规管理办法》— 合规风险识别、评估与整改全流程覆盖</div>
+          </div>
+        </div>
+        <div class="compliance-item">
+          <div class="compliance-flag">📋</div>
+          <div>
+            <div class="compliance-name">AICPA SSFS No.1</div>
+            <div class="compliance-desc">私营调查报告语言规范 — Step 11 自动检查，禁用"确认犯罪"等逾越性表述</div>
+          </div>
+        </div>
+        <div class="compliance-item" style="margin-bottom:0;">
+          <div class="compliance-flag">🔬</div>
+          <div>
+            <div class="compliance-name">ACFE FEM 2022 四规则</div>
+            <div class="compliance-desc">Rule 1 Predication 开案标准 · Rule 4 五源证据收集 · FTA 假设验证框架</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;background:var(--navy);color:white;border-radius:6px;padding:8px 10px;">
+          <div style="font-size:10pt;color:rgba(255,255,255,.5);margin-bottom:3px;">NIST AI RMF 1.0</div>
+          <div style="font-size:10pt;color:rgba(255,255,255,.7);line-height:1.45;">高风险 AI 决策必须保留人类判断权 · 每个 HITL 节点均记录人工审批人、时间戳与批准依据</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Synthesis banner -->
+    <div style="margin-top:auto;background:var(--navy);border-radius:8px;padding:14px 18px;display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:0;align-items:center;">
+      <div style="text-align:center;padding:0 8px;">
+        <div style="font-size:22pt;font-weight:900;color:#60a5fa;line-height:1;">10×</div>
+        <div style="font-size:9pt;font-weight:700;color:white;margin-top:3px;">调查效率跃升</div>
+        <div style="font-size:7.5pt;color:rgba(255,255,255,.5);margin-top:2px;">30–45天 → 4–8小时<br>三层 HITL 全程守门</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);height:52px;"></div>
+      <div style="text-align:center;padding:0 8px;">
+        <div style="font-size:22pt;font-weight:900;color:#4ade80;line-height:1;">92%</div>
+        <div style="font-size:9pt;font-weight:700;color:white;margin-top:3px;">综合置信度</div>
+        <div style="font-size:7.5pt;color:rgba(255,255,255,.5);margin-top:2px;">三维加权 · 三轮迭代验证<br>Devil's Advocate 反驳通过</div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);height:52px;"></div>
+      <div style="text-align:center;padding:0 8px;">
+        <div style="font-size:22pt;font-weight:900;color:#fbbf24;line-height:1;">5</div>
+        <div style="font-size:9pt;font-weight:700;color:white;margin-top:3px;">权威合规框架</div>
+        <div style="font-size:7.5pt;color:rgba(255,255,255,.5);margin-top:2px;">EU AI Act · 国资委43号<br>ACFE · AICPA · NIST RMF</div>
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp</span>
+      <span>依据：EU AI Act (2024/1689) · ACFE FEM 2022 · NIST AI RMF 1.0 · 国资委令第43号</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 10 — CASE STUDY: OPERATION GREENBRIDGE
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">示范案例 · Operation Greenbridge</div>
+        <div class="pg-num">12</div>
+      </div>
+    </div>
+
+    <!-- Case header band -->
+    <div class="case-header-band">
+      <div>
+        <div class="case-name">🔍 Operation Greenbridge</div>
+        <div class="case-id">INV-2024-3891 · ProVance Industrial Group · 采购腐败 + 费用舞弊</div>
+      </div>
+      <div class="case-meta">
+        <div class="case-meta-item">
+          <span class="case-meta-val">2022–2024</span>
+          <span>欺诈跨度</span>
+        </div>
+        <div class="case-meta-item">
+          <span class="case-meta-val">€695K+</span>
+          <span>已付溢价</span>
+        </div>
+        <div class="case-meta-item">
+          <span class="case-meta-val">92%</span>
+          <span>最终置信度</span>
+        </div>
+        <div class="case-meta-item">
+          <span class="case-meta-val">H1</span>
+          <span>主假设确认</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Evidence counts -->
+    <div class="evi-strip">
+      <div class="evi-item">
+        <div class="evi-num">20</div>
+        <div class="evi-label">封电子邮件<br>（含E002/E011/E017关键证据）</div>
+      </div>
+      <div class="evi-item">
+        <div class="evi-num">14</div>
+        <div class="evi-label">份采购合同<br>（8份异常·6份基准参照）</div>
+      </div>
+      <div class="evi-item">
+        <div class="evi-num">30</div>
+        <div class="evi-label">条 IT 行为日志<br>（含L009/L010极端异常）</div>
+      </div>
+      <div class="evi-item">
+        <div class="evi-num">11</div>
+        <div class="evi-label">条货物入库记录<br>（MC-2024-021 零入库·219天）</div>
+      </div>
+    </div>
+
+    <!-- Three findings -->
+    <div class="cols-3" style="align-items:start;margin-bottom:10px;">
+
+      <!-- Finding A: Price anomaly -->
+      <div class="finding-card">
+        <div class="finding-header" style="background:var(--red);">
+          <span>证据线 A · 合同价格统计异常</span>
+          <span class="badge" style="background:rgba(255,255,255,.2);color:white;">DigiKey+CCGP σ</span>
+        </div>
+        <div class="finding-body">
+          <div style="margin-bottom:6px;">
+            <div class="sigma-row">
+              <div class="sigma-row-header">
+                <span class="sigma-label">MC-2024-021 AS-700 传感器</span>
+                <span class="sigma-val">12.12σ</span>
+              </div>
+              <div class="sigma-market">€468 vs 市价 €285 · 超付 +64.2%</div>
+              <div class="bar-track"><div class="bar-fill-red" style="width:100%"></div></div>
+            </div>
+            <div class="sigma-row">
+              <div class="sigma-row-header">
+                <span class="sigma-label">MC-2024-089 ICU-900 控制单元</span>
+                <span class="sigma-val">12.60σ</span>
+              </div>
+              <div class="sigma-market">€748 vs 市价 €520 · 超付 +43.8%</div>
+              <div class="bar-track"><div class="bar-fill-red" style="width:100%"></div></div>
+            </div>
+            <div class="sigma-row">
+              <div class="sigma-row-header">
+                <span class="sigma-label">MC-2024-068 PP-500 精密PCB</span>
+                <span class="sigma-val">6.83σ</span>
+              </div>
+              <div class="sigma-market">€138 vs 市价 €95 · 超付 +45.3%</div>
+              <div class="bar-track"><div class="bar-fill-red" style="width:85%"></div></div>
+            </div>
+          </div>
+          <div style="font-size:11pt;color:var(--text-3);border-top:1px solid var(--border);padding-top:4px;">
+            σ 基准：DigiKey REST API + CCGP V1.0 实时查询<br>
+            对照：NC-2022-015 Nordic Tech 偏差仅 1.6%（正常）<br>
+            三年价格偏离逐年升级，2022年+22%→2024年+64%
+          </div>
+        </div>
+      </div>
+
+      <!-- Finding B: Behavior -->
+      <div class="finding-card">
+        <div class="finding-header" style="background:var(--amber);">
+          <span>证据线 B · IT 行为偏离</span>
+          <span class="badge" style="background:rgba(255,255,255,.2);color:white;">Exabeam UEBA</span>
+        </div>
+        <div class="finding-body">
+          <table class="tbl" style="font-size:11pt;">
+            <thead>
+              <tr>
+                <th>行为事件</th>
+                <th>偏离值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="hi-row">
+                <td><strong>L010</strong> 审计通知次日批量删除 127 件文件</td>
+                <td><strong style="color:var(--red)">113σ</strong></td>
+              </tr>
+              <tr class="hi-row">
+                <td><strong>L009</strong> 23:14 "go dark"邮件后深夜VPN+下载</td>
+                <td><strong style="color:var(--red)">88σ</strong></td>
+              </tr>
+              <tr>
+                <td>L001–L007 合同签署前夜深夜VPN访问（连续7次）</td>
+                <td><strong style="color:var(--amber)">18σ</strong></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:6px;background:var(--red-pale);border:1px solid #fca5a5;border-radius:4px;padding:5px 7px;font-size:11pt;color:var(--text-2);">
+            <strong>E017 关键证据：</strong>Marcus Chen 于 2024-09-09 23:14 发出<br>
+            "Go dark immediately. Delete all correspondence." 销毁指令，
+            14分钟后系统记录批量删除（L010）。邮件已从服务器完整保留。
+          </div>
+          <div style="margin-top:4px;font-size:11pt;color:var(--text-3);">
+            Oliver Hartmann 伪造差旅报销 3 次共 €38.4K<br>
+            审计立案后将全部报销记录转发至个人 Gmail（E019）
+          </div>
+        </div>
+      </div>
+
+      <!-- Finding C: Graph -->
+      <div class="finding-card">
+        <div class="finding-header" style="background:var(--purple);">
+          <span>证据线 C · 关联图谱社群</span>
+          <span class="badge" style="background:rgba(255,255,255,.2);color:white;">Q=0.74</span>
+        </div>
+        <div class="finding-body">
+          <div style="font-size:10pt;font-weight:700;color:var(--navy);margin-bottom:4px;">Louvain 检测 2 个独立风险社群</div>
+          <div style="background:var(--bg);border-radius:5px;padding:7px;font-size:11pt;color:var(--text-2);margin-bottom:6px;line-height:1.6;">
+            <strong style="color:var(--red)">社群①</strong> 核心利益输送圈<br>
+            Marcus Chen（CPO）→ Oliver Hartmann（CFO）<br>
+            → Meridian Components Ltd.（William Lee）<br>
+            → Longview Holdings（Derek Chen · 受益所有人）
+          </div>
+          <div style="background:var(--bg);border-radius:5px;padding:7px;font-size:11pt;color:var(--text-2);margin-bottom:6px;line-height:1.6;">
+            <strong style="color:var(--amber)">社群②</strong> 费用欺诈协同圈<br>
+            Oliver Hartmann → Ana Kovač<br>
+            → Cascade Industrial GmbH（Düsseldorf）
+          </div>
+          <div style="font-size:11pt;color:var(--text-3);">
+            25节点 · 40条边 · 模块度 Q=0.74（高于强社群阈值 0.3）<br>
+            两个风险社群与正常采购路径（Nordic Tech / Atlas）<br>
+            无任何交叉节点，符合孤立共谋特征
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Conclusion -->
+    <div class="conclusion-strip">
+      <div class="conclusion-conf">92%</div>
+      <div class="conclusion-body">
+        <div class="conclusion-title">⚖️ 调查结论 — H1 利益输送协议（三源印证）</div>
+        <div class="conclusion-desc">
+          Marcus Chen（CPO）与 Meridian Components Ltd. / Cascade Industrial GmbH 供应商串谋，
+          通过 2022–2024 年 8 份异常采购合同持续转移企业资产，个人回扣经 Longview Holdings 账户路由。
+          三条独立证据线形成完整证据链，已具备移交司法调查的证据基础。
+        </div>
+        <div class="conclusion-chain">
+          <span class="conclusion-chain-pill">📩 通讯证据 · E002/E009/E011/E017</span>
+          <span class="conclusion-chain-pill">📊 合同财务 · 8份异常合同 €695K+溢价</span>
+          <span class="conclusion-chain-pill">💻 IT行为 · L009/L010 极端偏离</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · Operation Greenbridge · INV-2024-3891</span>
+      <span>示范案例使用结构化模拟数据；实际部署通过 DigiKey REST API + CCGP + Exchange eDiscovery 接口</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 11 — RISK, IMPROVEMENT & SUMMARY
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+
+    <div class="pg-header">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="logo-mark">MT</div>
+        <span style="font-size:10.5pt;font-weight:700;color:var(--navy);">MultiTrace</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:10.5pt;color:var(--text-3);">改进与风险 · 总结</span>
+        <div class="pg-num">13</div>
+      </div>
+    </div>
+
+    <!-- Section IV -->
+    <div class="sec-title" style="margin-bottom:10px;">11 · 改进空间与风险边界</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🔒</span>
+          <span class="risk-title">数据隐私与跨境合规</span>
+          <span class="risk-severity high">高</span>
+        </div>
+        <div class="risk-body">调查涉及员工邮件、日志等个人敏感数据，跨境存储时须满足 GDPR（欧）、《个人信息保护法》（中）双重要求；证据链哈希值与原始文档的分离存储机制在高数据量下尚未经过生产验证。</div>
+        <div class="risk-counter">引入差分隐私脱敏预处理；实际部署采用私有化部署方案，原始数据不出本地数据中心；合规律师参与数据流设计评审。</div>
+      </div>
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🤖</span>
+          <span class="risk-title">LLM 幻觉与证据可靠性</span>
+          <span class="risk-severity high">高</span>
+        </div>
+        <div class="risk-body">GPT-4o 在长文档实体提取中存在 ~5–8% 幻觉率，可能导致错误实体关系进入知识图谱，影响后续统计置信度。当前 Demo 数据量有限，实际部署中错误传播风险更高。</div>
+        <div class="risk-counter">三轮 Devil's Advocate 机制主动反驳假设；所有 LLM 输出须经 SHA-256 审计链记录；Tier 1 HITL 阻断确保关键结论必须人工复核。</div>
+      </div>
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">📊</span>
+          <span class="risk-title">统计显著性限制</span>
+          <span class="risk-severity med">中</span>
+        </div>
+        <div class="risk-body">当前 Demo 基于 25 节点图谱，Louvain Q=0.74 的社群结构在小规模数据集上统计意义有限；价格σ检验在样本量不足时（&lt;30条）误报率上升，阈值需随数据量动态校准。</div>
+        <div class="risk-counter">实际部署最低数据量要求：图谱 ≥200 节点，价格比对 ≥100 条同类合同；动态阈值引擎按数据量自动调整σ截断值。</div>
+      </div>
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">⚖️</span>
+          <span class="risk-title">司法证据标准差距</span>
+          <span class="risk-severity med">中</span>
+        </div>
+        <div class="risk-body">系统输出可作为内部纪律调查证据基础，但直接用于刑事起诉须额外满足各司法管辖区的证据可采性要求（如中国《刑事诉讼法》第 54 条鉴定人资质规定）。</div>
+        <div class="risk-counter">报告明确标注"证据基础"而非"司法结论"；提供结构化数据导出以对接专业司法鉴定流程；保留完整 Chain of Custody 审计链供法庭查验。</div>
+      </div>
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🔄</span>
+          <span class="risk-title">系统集成与数据接口</span>
+          <span class="risk-severity low">低</span>
+        </div>
+        <div class="risk-body">Demo 使用结构化模拟数据；真实部署须对接各企业不同版本的 ERP/OA/邮件系统，字段映射与数据清洗工作量因企业而异，可能影响交付周期。</div>
+        <div class="risk-counter">提供标准 ETL 适配层；已验证 Exchange eDiscovery API、DigiKey REST、CCGP 数据接口；客户部署采用分阶段接入策略。</div>
+      </div>
+
+      <div class="risk-card">
+        <div class="risk-header">
+          <span class="risk-icon">🌐</span>
+          <span class="risk-title">未来改进方向</span>
+          <span class="risk-severity low">路线图</span>
+        </div>
+        <div class="risk-body">
+          <b>短期：</b>增加多模态证据支持（图片、音频 Deepfake 检测），对应赛题场景 b) 数字证据可信评估。<br>
+          <b>中期：</b>实时监控模式——持续扫描数据流，将滞后检测（12个月）压缩至实时告警（&lt;24小时）。<br>
+          <b>长期：</b>跨组织联邦学习，在保护数据隐私前提下共享欺诈模式特征，提升检测精度。
+        </div>
+        <div class="risk-counter">多模态接口已预留在 Agent 3/4 架构中；联邦学习框架参照 arXiv:2308.00352 设计。</div>
+      </div>
+
+    </div>
+
+    <!-- Section V: Summary -->
+    <div style="background:var(--navy);border-radius:8px;padding:12px 15px;color:white;">
+      <div style="font-size:10pt;font-weight:800;letter-spacing:1px;color:rgba(255,255,255,.6);margin-bottom:8px;">12 · 总结</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;">
+        <div>
+          <div style="font-size:10pt;font-weight:700;color:var(--blue-l);margin-bottom:4px;">核心问题</div>
+          <div style="font-size:10pt;color:rgba(255,255,255,.85);line-height:1.5;">企业内部欺诈调查依赖人工，分析周期30-45天，证据孤岛严重，误报率是ML系统3倍</div>
+        </div>
+        <div>
+          <div style="font-size:10pt;font-weight:700;color:var(--blue-l);margin-bottom:4px;">核心思路</div>
+          <div style="font-size:10pt;color:rgba(255,255,255,.85);line-height:1.5;">7个专职Agent并行多源分析，LangGraph统一状态管理，三层HITL确保AI决策始终有人类监督</div>
+        </div>
+        <div>
+          <div style="font-size:10pt;font-weight:700;color:var(--blue-l);margin-bottom:4px;">主要亮点</div>
+          <div style="font-size:10pt;color:rgba(255,255,255,.85);line-height:1.5;">4–8小时完成30-45天工作量；92%置信度三源加权；完整Chain of Custody；双重合规框架锚定</div>
+        </div>
+        <div>
+          <div style="font-size:10pt;font-weight:700;color:var(--blue-l);margin-bottom:4px;">预期成果</div>
+          <div style="font-size:10pt;color:rgba(255,255,255,.85);line-height:1.5;">调查周期60-90天→5-7天；可作为纪律处分与司法移交证据基础；支持6类企业欺诈场景</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 12 — TECH STACK + REFERENCES
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-inner">
+    <div class="pg-header">
+      <div class="pg-logo">
+        <div class="pg-logo-box">MT</div>
+        <div class="pg-logo-name">MultiTrace</div>
+      </div>
+      <div class="pg-header-right">
+        <div class="pg-section-name">技术架构 · 参考文献 · 合规声明</div>
+        <div class="pg-num">14</div>
+      </div>
+    </div>
+
+    <div class="cols-2" style="align-items:start;flex:1;">
+
+      <!-- Left column: Tech stack -->
+      <div>
+        <div class="sec-title">13 · 技术实现架构</div>
+
+        <div style="font-size:11pt;font-weight:800;color:var(--navy);margin-bottom:6px;">🤖 AI 编排层</div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">⚡</div>
+          <div>
+            <div class="tech-stack-name">LangGraph StateGraph</div>
+            <div class="tech-stack-desc">7 Agent 节点图 + 条件边分支 + interrupt()/resume() HITL 原语 · Python 3.11</div>
+          </div>
+        </div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">🧠</div>
+          <div>
+            <div class="tech-stack-name">GPT-4o Structured Output</div>
+            <div class="tech-stack-desc">strict:true JSON Schema 抽取 · 置信度 &lt;0.8 自动降级人工标注 · ReAct 推理链写入 audit_trail</div>
+          </div>
+        </div>
+
+        <div style="font-size:11pt;font-weight:800;color:var(--navy);margin:10px 0 6px;">💹 价格基准数据层</div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">📡</div>
+          <div>
+            <div class="tech-stack-name">DigiKey REST API（主数据源）</div>
+            <div class="tech-stack-desc">实时报价查询 · μ/σ 实时计算非硬编码 · 跨供应商标准差基准</div>
+          </div>
+        </div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">🏛</div>
+          <div>
+            <div class="tech-stack-name">CCGP 政采数据接口 V1.0</div>
+            <div class="tech-stack-desc">XML/JSON 历史政府采购成交价 · 国内市场价格双重验证</div>
+          </div>
+        </div>
+        <div class="tech-stack-item" style="border-bottom:none;">
+          <div class="tech-stack-icon">🔌</div>
+          <div>
+            <div class="tech-stack-name">LCSC 立创 + CECA 行业报告</div>
+            <div class="tech-stack-desc">每日爬取国内现货价 + 季度行业趋势 PDF 导入校准</div>
+          </div>
+        </div>
+
+        <div style="font-size:11pt;font-weight:800;color:var(--navy);margin:10px 0 6px;">📋 取证与存储层</div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">📧</div>
+          <div>
+            <div class="tech-stack-name">Exchange eDiscovery / Coremail</div>
+            <div class="tech-stack-desc">PST/EML 合规导出 · 诉讼保全完整性 · SMTP 日志独立存储</div>
+          </div>
+        </div>
+        <div class="tech-stack-item">
+          <div class="tech-stack-icon">🕸</div>
+          <div>
+            <div class="tech-stack-name">Neo4j + vis.js 9.1.9</div>
+            <div class="tech-stack-desc">ELP 三层图谱 · Louvain 社群检测 · 前端交互可视化</div>
+          </div>
+        </div>
+        <div class="tech-stack-item" style="border-bottom:none;">
+          <div class="tech-stack-icon">🔐</div>
+          <div>
+            <div class="tech-stack-name">SHA-256 Chain of Custody</div>
+            <div class="tech-stack-desc">每条证据 7字段封存（ev_id · sha256 · timestamp · tool · operator · case_id · chain_seq）</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column: References + Compliance -->
+      <div>
+        <div class="sec-title">14 · 核心参考文献</div>
+
+        <div class="ref-item">
+          <span class="ref-badge badge-blue">arXiv</span>
+          <div>
+            <div class="ref-text"><strong>arXiv:2508.06574</strong> — AI-based Financial Fraud Detection: FPR 2.9%, Precision 0.856</div>
+            <div class="ref-cite">系统误报率基准 · 每案节省人工 &gt;2小时</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-blue">arXiv</span>
+          <div>
+            <div class="ref-text"><strong>arXiv:2308.00352</strong> — MetaGPT: Meta Programming for Multi-Agent Collaboration</div>
+            <div class="ref-cite">Devil's Advocate 对抗分析设计参照 · SOP 驱动架构</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-blue">arXiv</span>
+          <div>
+            <div class="ref-text"><strong>arXiv:2210.03629</strong> — ReAct: Reasoning and Acting in Language Models (Yao et al., ICLR 2023)</div>
+            <div class="ref-cite">Agent ReAct 框架 · 推理轨迹写入 audit_trail 设计依据</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-purple">行业</span>
+          <div>
+            <div class="ref-text"><strong>ACFE 2024 Report to the Nations</strong> — 1,921 fraud cases, median loss $145K, 12-month detection lag</div>
+            <div class="ref-cite">欺诈检测效率基准 · 欺诈模式分类参照</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-purple">行业</span>
+          <div>
+            <div class="ref-text"><strong>ACFE FEM 2022</strong> — Fraud Examiner's Manual · FTA 框架 · 四规则（Rule 1–4）</div>
+            <div class="ref-cite">开案标准 · 证据分级框架 · 假设验证方法论</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-green">法规</span>
+          <div>
+            <div class="ref-text"><strong>EU AI Act Art. 14</strong> (Regulation 2024/1689) — 高风险 AI 系统强制人类监督</div>
+            <div class="ref-cite">HITL 三层机制直接对应 · 2025年全面生效</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-green">法规</span>
+          <div>
+            <div class="ref-text"><strong>NIST AI RMF 1.0</strong> — AI Risk Management Framework · 人类判断保留原则</div>
+            <div class="ref-cite">高风险 AI 决策治理框架参照</div>
+          </div>
+        </div>
+        <div class="ref-item">
+          <span class="ref-badge badge-amber">标准</span>
+          <div>
+            <div class="ref-text"><strong>AICPA SSFS No.1</strong> — Statement on Standards for Forensic Services</div>
+            <div class="ref-cite">调查报告语言规范 · Step 11 自动合规检查依据</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sec-title" style="margin-top:10px;">15 · 声明与说明</div>
+        <div style="font-size:10pt;color:var(--text-3);line-height:1.7;background:var(--bg);border-radius:6px;padding:8px 10px;">
+          <strong style="color:var(--text-2)">示范案例说明：</strong>
+          Operation Greenbridge（INV-2024-3891）使用结构化模拟数据，涉案人物为虚构。
+          实际部署通过标准接口接入真实企业系统（ERP/WMS/Exchange/SIEM）。<br><br>
+          <strong style="color:var(--text-2)">技术声明：</strong>
+          置信度递进（65%→82%→92%）为系统自定义迭代估算，权重参照 ACFE FEM 2022 证据分级框架，
+          非经验证的精确公式。Louvain Q=0.74 基于示范案例 25 节点数据集，实际部署规模更大。<br><br>
+          <strong style="color:var(--text-2)">法律声明：</strong>
+          MultiTrace 可为纪律处分与司法移交提供证据基础；最终法律效力由具有管辖权的机构认定，
+          系统不独立作出定性结论，所有关键决策须经专业人员书面审查签发。
+        </div>
+
+        <div style="margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:11pt;color:var(--text-4);">
+          <span>MultiTrace · Version 2026.04.20</span>
+          <span style="color:var(--blue);font-weight:700;">https://multitrace-ai.netlify.app</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pg-footer">
+      <span>MultiTrace · 2026 Deloitte Digital Camp · 完整交互演示：https://multitrace-ai.netlify.app</span>
+      <span>© 2026 · Powered by LangGraph · GPT-4o · Neo4j · vis.js</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
