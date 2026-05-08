@@ -186,6 +186,278 @@ body{
 .view.active{display:block}
 
 /* ══════════════════════════════════════════════
+   NAV — Primary CTA + Dropdown
+══════════════════════════════════════════════ */
+.nav-link-primary{background:var(--blue);color:#fff !important}
+.nav-link-primary:hover{background:#1d4ed8;color:#fff !important}
+.nav-link-primary.active{background:#1d4ed8;color:#fff !important}
+.nav-link-primary.active::after{display:none}
+.nav-dropdown{position:relative}
+.nav-dropdown-menu{
+  position:absolute;top:calc(100% + 4px);left:0;
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:8px;padding:6px;min-width:180px;
+  box-shadow:0 4px 16px rgba(0,0,0,.08);
+  display:none;z-index:1000;
+}
+.nav-dropdown:hover .nav-dropdown-menu{display:block}
+.nav-dropdown-item{
+  display:block;width:100%;text-align:left;
+  padding:8px 12px;font-size:13px;color:var(--t1);
+  background:transparent;border:none;border-radius:5px;
+  cursor:pointer;transition:background .15s;
+}
+.nav-dropdown-item:hover{background:var(--bg2)}
+
+/* ══════════════════════════════════════════════
+   VIEW: CONSOLE — Investigation Workbench (PRODUCT DEMO)
+══════════════════════════════════════════════ */
+#view-console{margin-top:var(--nav-h);min-height:calc(100vh - var(--nav-h));display:none;background:var(--bg2)}
+#view-console.active{display:block}
+.con-wrap{max-width:980px;margin:0 auto;padding:48px 32px 80px}
+.con-wrap-narrow{max-width:680px;margin:0 auto;padding:48px 32px 80px}
+
+/* Console Top Bar (case context) */
+.con-topbar{
+  background:var(--bg1);border-bottom:1px solid var(--border);
+  padding:12px 32px;display:flex;align-items:center;gap:16px;
+  font-size:12.5px;color:var(--t3);
+  position:sticky;top:var(--nav-h);z-index:90;
+}
+.con-topbar-id{font-family:'JetBrains Mono','SF Mono',monospace;color:var(--t1);font-weight:600}
+.con-topbar-sep{color:var(--t4)}
+.con-topbar-meta{display:flex;align-items:center;gap:14px;margin-left:auto}
+.con-topbar-meta-item{display:flex;align-items:center;gap:5px}
+.con-topbar-dot{width:6px;height:6px;border-radius:50%;background:#16a34a}
+.con-topbar-dot.running{background:var(--blue);animation:conpulse 1.5s ease-in-out infinite}
+@keyframes conpulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* 3-phase progress bar */
+.con-phases{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:48px;padding:0 40px}
+.con-phase{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;cursor:pointer;transition:opacity .2s}
+.con-phase.disabled{opacity:.35;cursor:not-allowed}
+.con-phase-dot{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--bg3);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--t3);
+  transition:all .3s;
+}
+.con-phase.active .con-phase-dot{background:var(--blue);border-color:var(--blue);color:#fff}
+.con-phase.done .con-phase-dot{background:#16a34a;border-color:#16a34a;color:#fff}
+.con-phase-label{font-size:12px;color:var(--t3);font-weight:500;letter-spacing:.5px}
+.con-phase.active .con-phase-label{color:var(--t1);font-weight:600}
+.con-phase-line{flex:1;height:2px;background:var(--border);margin:0 12px;margin-top:-22px;max-width:100px;transition:background .4s}
+.con-phase-line.done{background:#16a34a}
+
+/* Console Home — single card */
+.con-welcome{text-align:center;margin-bottom:40px}
+.con-welcome-greet{font-size:14px;color:var(--t3);margin-bottom:6px;font-weight:500;letter-spacing:.3px}
+.con-welcome-text{font-size:22px;color:var(--t1);font-weight:600;letter-spacing:-.3px}
+.con-active-card{
+  background:var(--bg1);border:1px solid var(--border);
+  border-radius:12px;padding:32px;cursor:pointer;
+  transition:all .25s;text-align:left;
+  margin-bottom:24px;
+}
+.con-active-card:hover{border-color:var(--blue);box-shadow:0 4px 20px rgba(37,99,235,.08);transform:translateY(-1px)}
+.con-active-card-id{font-size:11.5px;color:var(--t3);font-family:'JetBrains Mono','SF Mono',monospace;margin-bottom:6px;letter-spacing:.5px}
+.con-active-card-title{font-size:20px;font-weight:600;color:var(--t1);margin-bottom:14px;letter-spacing:-.2px}
+.con-active-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:13px;color:var(--t3)}
+.con-active-card-meta-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:12px;background:var(--blue-l);color:var(--blue);font-weight:500;font-size:11.5px}
+.con-active-card-action{margin-top:12px;padding-top:16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end;gap:6px;color:var(--blue);font-size:13.5px;font-weight:600}
+.con-secondary{display:flex;align-items:center;justify-content:center;gap:24px;font-size:13px;color:var(--t3)}
+.con-secondary a{color:var(--t2);font-weight:500;text-decoration:none;cursor:pointer;transition:color .15s}
+.con-secondary a:hover{color:var(--blue)}
+
+/* Setup screen */
+.con-screen-title{font-size:13px;color:var(--blue);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.con-screen-h1{font-size:28px;font-weight:600;color:var(--t1);letter-spacing:-.4px;margin-bottom:32px}
+.con-section-label{font-size:11px;color:var(--t3);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.con-section{margin-bottom:36px}
+.con-section-divider{height:1px;background:var(--border);margin:0 -32px 36px}
+.con-info-block{font-size:15px;color:var(--t1);line-height:1.7;margin-bottom:6px}
+.con-info-meta{font-size:13px;color:var(--t3);line-height:1.7}
+.con-disclosure{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;color:var(--t3);cursor:pointer;margin-top:10px;user-select:none;transition:color .15s}
+.con-disclosure:hover{color:var(--blue)}
+.con-disclosure-icon{transition:transform .25s;font-size:10px}
+.con-disclosure.open .con-disclosure-icon{transform:rotate(90deg)}
+.con-disclosure-content{margin-top:14px;padding:16px 18px;background:var(--bg2);border-left:3px solid var(--blue);border-radius:6px;display:none;font-size:13px;color:var(--t2);line-height:1.7}
+.con-disclosure.open + .con-disclosure-content{display:block}
+
+.con-5w{display:grid;grid-template-columns:80px 1fr;gap:6px 18px;font-size:13.5px;line-height:1.6}
+.con-5w-key{color:var(--t3);font-weight:500;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;padding-top:2px}
+.con-5w-val{color:var(--t1)}
+
+.con-data-list{font-size:14px;line-height:2}
+.con-data-row{display:flex;align-items:center;gap:14px;padding:8px 0;border-bottom:1px solid var(--border)}
+.con-data-row:last-child{border-bottom:none}
+.con-data-check{color:#16a34a;font-weight:700}
+.con-data-name{color:var(--t1);flex:1;font-weight:500}
+.con-data-count{color:var(--t3);font-family:'JetBrains Mono','SF Mono',monospace;font-size:12.5px}
+
+.con-primary-btn{
+  width:100%;padding:16px 24px;
+  background:var(--blue);color:#fff;border:none;border-radius:8px;
+  font-size:15px;font-weight:600;cursor:pointer;
+  transition:all .2s;letter-spacing:.2px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.con-primary-btn:hover{background:#1d4ed8;transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,99,235,.25)}
+.con-primary-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+.con-ghost-btn{
+  padding:12px 22px;background:transparent;color:var(--t2);border:1px solid var(--border);border-radius:8px;
+  font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;
+}
+.con-ghost-btn:hover{background:var(--bg2);color:var(--t1)}
+
+/* Investigate screen — CORE DRAMA */
+.con-pipe-wrap{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:36px 32px;margin-bottom:24px}
+.con-pipe-step-info{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.con-pipe-step-num{font-size:13px;color:var(--t3);font-family:'JetBrains Mono','SF Mono',monospace;font-weight:500}
+.con-pipe-elapsed{font-size:12px;color:var(--t3);font-family:'JetBrains Mono','SF Mono',monospace;font-variant-numeric:tabular-nums}
+
+/* 7 agent dots */
+.con-agents{display:flex;align-items:center;justify-content:center;gap:0;margin:32px 0 36px;position:relative}
+.con-agent{display:flex;flex-direction:column;align-items:center;gap:8px;flex-shrink:0;width:80px;cursor:pointer}
+.con-agent-dot{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg3);border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:var(--t3);
+  transition:all .3s;position:relative;
+}
+.con-agent.active .con-agent-dot{
+  background:var(--blue);border-color:var(--blue);color:#fff;
+  box-shadow:0 0 0 4px rgba(37,99,235,.18);
+  animation:agentpulse 1.5s ease-in-out infinite;
+}
+@keyframes agentpulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(37,99,235,.18)}
+  50%{box-shadow:0 0 0 8px rgba(37,99,235,.06)}
+}
+.con-agent.done .con-agent-dot{background:#16a34a;border-color:#16a34a;color:#fff}
+.con-agent.warn .con-agent-dot{background:#d97706;border-color:#d97706;color:#fff}
+.con-agent-label{font-size:10.5px;color:var(--t3);font-weight:500;letter-spacing:.3px;text-align:center}
+.con-agent.active .con-agent-label{color:var(--t1);font-weight:600}
+.con-agent-link{position:absolute;top:18px;height:2px;background:var(--border);transition:background .4s}
+.con-agent-link.active{background:#16a34a}
+
+/* Active agent reasoning panel */
+.con-agent-active-name{font-size:18px;font-weight:600;color:var(--t1);margin-bottom:4px;letter-spacing:-.2px}
+.con-agent-active-sub{font-size:12.5px;color:var(--t3);margin-bottom:16px}
+.con-stream{
+  background:var(--bg2);border-radius:8px;padding:18px 20px;
+  font-family:'JetBrains Mono','SF Mono',monospace;font-size:12.5px;
+  line-height:1.75;color:var(--t1);
+  min-height:200px;max-height:380px;overflow-y:auto;
+  scroll-behavior:smooth;
+}
+.con-stream-line{margin-bottom:2px;white-space:pre-wrap;word-break:break-word}
+.con-stream-thought{color:var(--t2)}
+.con-stream-tool{color:#7c3aed}
+.con-stream-obs{color:#0891b2}
+.con-stream-ok{color:#16a34a;font-weight:600}
+.con-stream-warn{color:#d97706;font-weight:600}
+.con-stream-critical{color:#dc2626;font-weight:700;background:#fef2f2;padding:2px 6px;border-radius:3px;display:inline-block}
+.con-stream-formula{color:#7c3aed;font-style:italic;background:#f5f3ff;padding:2px 8px;border-radius:3px;display:inline-block}
+.con-stream-cite{color:var(--t3);font-style:italic;font-size:11.5px}
+.con-stream-cursor{display:inline-block;width:8px;height:14px;background:var(--blue);vertical-align:text-bottom;animation:blink 1s steps(2) infinite;margin-left:1px}
+@keyframes blink{50%{opacity:0}}
+
+/* Stream meta footer */
+.con-stream-meta{
+  display:flex;align-items:center;gap:18px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);
+  font-size:11px;color:var(--t3);font-family:'JetBrains Mono','SF Mono',monospace;font-variant-numeric:tabular-nums;
+}
+.con-stream-meta-item{display:flex;align-items:center;gap:5px}
+.con-stream-meta-val{color:var(--t1);font-weight:600}
+
+/* HITL approval modal */
+.con-hitl-overlay{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:5000;
+  animation:hitlfade .35s ease-out;
+}
+.con-hitl-overlay.active{display:flex}
+@keyframes hitlfade{from{opacity:0}to{opacity:1}}
+.con-hitl-box{
+  background:var(--bg1);border-radius:14px;padding:36px 36px 28px;
+  width:min(520px,calc(100vw - 32px));
+  box-shadow:0 24px 60px rgba(0,0,0,.25);
+  animation:hitlpop .35s cubic-bezier(.2,.8,.2,1.05);
+}
+@keyframes hitlpop{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.con-hitl-icon{width:48px;height:48px;border-radius:50%;background:#fef3c7;color:#d97706;display:inline-flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.con-hitl-title{font-size:18px;font-weight:600;color:var(--t1);margin-bottom:8px;letter-spacing:-.2px}
+.con-hitl-desc{font-size:13.5px;color:var(--t3);line-height:1.65;margin-bottom:18px}
+.con-hitl-quote{
+  font-size:14px;color:var(--t1);line-height:1.65;font-weight:500;
+  padding:14px 16px;background:var(--bg2);border-left:3px solid var(--blue);
+  border-radius:6px;margin-bottom:18px;
+}
+.con-hitl-meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:12.5px;margin-bottom:24px}
+.con-hitl-meta-key{color:var(--t3)}
+.con-hitl-meta-val{color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums}
+.con-hitl-actions{display:flex;flex-direction:column;gap:8px}
+
+/* Findings screen */
+.con-conf-display{text-align:center;margin:8px 0 36px}
+.con-conf-num{font-size:64px;font-weight:700;color:var(--t1);letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
+.con-conf-num .pct{font-size:32px;color:var(--t3);margin-left:4px;font-weight:500}
+.con-conf-bar-wrap{max-width:340px;margin:18px auto 8px}
+.con-conf-bar{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.con-conf-bar-fill{height:100%;background:linear-gradient(90deg,#dc2626,#d97706,#2563eb);width:0;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.con-conf-label{font-size:12px;color:var(--t3);margin-top:8px;letter-spacing:.5px}
+
+.con-findings-list{list-style:none;padding:0;margin:0}
+.con-finding{
+  display:flex;align-items:flex-start;gap:14px;padding:18px 0;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  opacity:0;transform:translateY(6px);transition:all .5s;
+}
+.con-finding.revealed{opacity:1;transform:none}
+.con-finding:hover{padding-left:6px}
+.con-finding-dot{width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0;margin-top:7px}
+.con-finding-body{flex:1}
+.con-finding-text{font-size:15.5px;color:var(--t1);line-height:1.55;font-weight:500}
+.con-finding-meta{font-size:12px;color:var(--t3);margin-top:5px;font-family:'JetBrains Mono','SF Mono',monospace}
+.con-finding-arrow{color:var(--t4);font-size:16px;flex-shrink:0;margin-top:5px;transition:transform .2s}
+.con-finding:hover .con-finding-arrow{transform:translateX(2px);color:var(--blue)}
+
+.con-findings-actions{display:flex;align-items:center;gap:12px;margin-top:32px;flex-wrap:wrap}
+
+/* Decide screen */
+.con-decide-rec{font-size:14px;color:var(--t3);margin-bottom:14px;font-weight:500}
+.con-decide-list{list-style:none;padding:0;margin:0 0 24px}
+.con-decide-item{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--bg2);border-radius:8px;margin-bottom:8px;font-size:14px;color:var(--t1)}
+.con-decide-check{color:#16a34a;flex-shrink:0;font-weight:700;font-size:15px}
+.con-compliance-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.con-compliance-pill{
+  display:inline-flex;align-items:center;gap:5px;padding:5px 11px;
+  background:#dcfce7;color:#15803d;border-radius:14px;
+  font-size:11.5px;font-weight:600;letter-spacing:.2px;
+}
+
+.con-report-anim{
+  margin-top:28px;padding:24px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:1px solid #86efac;border-radius:10px;text-align:center;
+  display:none;animation:hitlfade .4s ease-out;
+}
+.con-report-anim.active{display:block}
+.con-report-icon{font-size:36px;margin-bottom:8px}
+.con-report-title{font-size:16px;font-weight:600;color:#15803d;margin-bottom:4px}
+.con-report-desc{font-size:12.5px;color:#166534;margin-bottom:16px}
+.con-report-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.con-report-btn{padding:9px 18px;background:#fff;color:#15803d;border:1px solid #86efac;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;transition:all .15s}
+.con-report-btn:hover{background:#16a34a;color:#fff;border-color:#16a34a}
+
+/* Sub-screen routing inside console */
+.con-sub{display:none}
+.con-sub.active{display:block;animation:subfade .35s ease-out}
+@keyframes subfade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════════════════════
    VIEW: INTAKE (Step 0 — Data Ingestion)
 ══════════════════════════════════════════════ */
 #view-intake{margin-top:var(--nav-h);min-height:calc(100vh - var(--nav-h));display:none;background:var(--bg2);padding:32px 0 60px}
@@ -1995,9 +2267,15 @@ html[data-theme="dark"] .hitl-3-box{background:var(--green-m);color:#6ee7b7}
 
   <div class="nav-links">
     <button class="nav-link active" id="nav-home" onclick="showView('home')">主页</button>
-    <button class="nav-link" id="nav-intake" onclick="showView('intake')">数据摄取</button>
-    <button class="nav-link" id="nav-case" onclick="showView('case')">示范案例</button>
-    <button class="nav-link" id="nav-graph" onclick="showView('graph')">关系图谱 →</button>
+    <button class="nav-link nav-link-primary" id="nav-console" onclick="showView('console')">调查工作台 →</button>
+    <div class="nav-dropdown">
+      <button class="nav-link" id="nav-docs">详细文档 ▾</button>
+      <div class="nav-dropdown-menu">
+        <button class="nav-dropdown-item" onclick="showView('intake')">数据摄取流程</button>
+        <button class="nav-dropdown-item" onclick="showView('case')">12 步调查方法</button>
+        <button class="nav-dropdown-item" onclick="showView('graph')">关系图谱视图</button>
+      </div>
+    </div>
   </div>
 
   <div class="nav-spacer"></div>
@@ -2678,6 +2956,432 @@ IT 行为日志 × 25% = 0.88 × 0.25 = 0.220
 </div><!-- /#view-home -->
 
 <!-- ══════════════════════════════════════════════
+     VIEW: CONSOLE — Investigation Workbench (Product Demo)
+════════════════════════════════════════════════ -->
+<div class="view" id="view-console">
+
+  <!-- ── Top context bar (shown when inside a case) ── -->
+  <div class="con-topbar" id="con-topbar" style="display:none">
+    <span class="con-topbar-id">INV-2026-0042</span>
+    <span class="con-topbar-sep">·</span>
+    <span>采购回扣调查</span>
+    <div class="con-topbar-meta">
+      <div class="con-topbar-meta-item">
+        <span class="con-topbar-dot" id="con-pipe-status-dot"></span>
+        <span id="con-pipe-status-text">就绪</span>
+      </div>
+      <div class="con-topbar-meta-item">
+        <span>Run</span>
+        <span style="font-family:'JetBrains Mono','SF Mono',monospace;color:var(--t1);font-weight:600">run_x9k2m</span>
+      </div>
+      <div class="con-topbar-meta-item">
+        <span>调查员</span>
+        <span style="color:var(--t1);font-weight:600">YL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Sub-screen 1: HOME ══ -->
+  <div class="con-sub active" id="con-sub-home">
+    <div class="con-wrap-narrow" style="padding-top:88px">
+      <div class="con-welcome">
+        <div class="con-welcome-greet">Welcome back, Yidong</div>
+        <div class="con-welcome-text">您有 1 个调查正在进行</div>
+      </div>
+
+      <div class="con-active-card" onclick="conEnterCase()">
+        <div class="con-active-card-id">INV-2026-0042</div>
+        <div class="con-active-card-title">采购回扣调查（电子元件价格虚高）</div>
+        <div class="con-active-card-meta">
+          <span class="con-active-card-meta-pill">⏸ 等待您启动</span>
+          <span style="color:var(--t4)">·</span>
+          <span>立项 2 小时前</span>
+          <span style="color:var(--t4)">·</span>
+          <span>75 份证据已就位</span>
+        </div>
+        <div class="con-active-card-action">
+          打开调查 →
+        </div>
+      </div>
+
+      <div class="con-secondary">
+        <a onclick="conToast('演示模式只展示 1 个进行中案件')">+ 新建调查</a>
+        <span style="color:var(--t4)">·</span>
+        <a onclick="conToast('演示模式只展示 1 个进行中案件')">查看全部 (12)</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Sub-screen 2: SETUP ══ -->
+  <div class="con-sub" id="con-sub-setup">
+    <div class="con-wrap-narrow">
+
+      <div class="con-phases">
+        <div class="con-phase active" onclick="conGoSub('setup')">
+          <div class="con-phase-dot">1</div>
+          <div class="con-phase-label">立项</div>
+        </div>
+        <div class="con-phase-line"></div>
+        <div class="con-phase disabled">
+          <div class="con-phase-dot">2</div>
+          <div class="con-phase-label">调查</div>
+        </div>
+        <div class="con-phase-line"></div>
+        <div class="con-phase disabled">
+          <div class="con-phase-dot">3</div>
+          <div class="con-phase-label">决议</div>
+        </div>
+      </div>
+
+      <div class="con-screen-title">PHASE 1 · CASE SETUP</div>
+      <div class="con-screen-h1">立项与数据接入</div>
+
+      <div class="con-section">
+        <div class="con-section-label">调查范围</div>
+        <div class="con-info-block">
+          基于匿名举报与 Q1 价格异常预警，立项调查 <strong>Marcus Chen（CPO）</strong>主导的电子元件采购回扣嫌疑。
+        </div>
+        <div class="con-info-meta">
+          时间窗口：2024-Q1（90 天）· 涉及部门：采购 → 财务 → 外部供应商
+        </div>
+        <div class="con-disclosure" onclick="this.classList.toggle('open')">
+          <span class="con-disclosure-icon">›</span>
+          <span>查看 ACFE 5W 详情</span>
+        </div>
+        <div class="con-disclosure-content">
+          <div class="con-5w">
+            <div class="con-5w-key">Who</div>
+            <div class="con-5w-val">Marcus Chen (CPO) · 主体；外部 ABC Electronics 关联方；Oliver Hartmann (CFO) 嫌疑共谋</div>
+            <div class="con-5w-key">What</div>
+            <div class="con-5w-val">采购回扣 + 供应商价格虚高 + 资金回流离岸账户</div>
+            <div class="con-5w-key">When</div>
+            <div class="con-5w-val">2024-01-05 至 2024-04-15（90 天调查窗口）</div>
+            <div class="con-5w-key">Where</div>
+            <div class="con-5w-val">采购部 → 应付账款 → 监管账户 → 开曼 SPV → 个人账户</div>
+            <div class="con-5w-key">Why</div>
+            <div class="con-5w-val">匿名举报（2024-04-12 内部 hotline）+ DigiKey 价格基准触发 5σ 预警</div>
+          </div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);font-size:11.5px;color:var(--t3)">
+            参考：ACFE Fraud Examiners Manual §3.4 — Investigation Predication & Scoping
+          </div>
+        </div>
+      </div>
+
+      <div class="con-section-divider"></div>
+
+      <div class="con-section">
+        <div class="con-section-label">调查团队（CFE + Legal + IT + SME）</div>
+        <div class="con-data-list">
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">Yidong Li · Lead CFE</span>
+            <span class="con-data-count">您本人</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">Sarah Liu · 法务顾问</span>
+            <span class="con-data-count">已加入</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">Mike Tan · IT 取证</span>
+            <span class="con-data-count">已加入</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">Wei Wang · 采购领域专家</span>
+            <span class="con-data-count">已加入</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="con-section-divider"></div>
+
+      <div class="con-section">
+        <div class="con-section-label">数据源接入（4 类 · 75 文件 · 142 MB）</div>
+        <div class="con-data-list">
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">企业邮件 (Microsoft 365 Graph API)</span>
+            <span class="con-data-count">.eml × 20</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">合同与发票 (SharePoint + 扫描件)</span>
+            <span class="con-data-count">.pdf × 14</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">财务流水 (SAP ERP RFC + 银行对账)</span>
+            <span class="con-data-count">.csv × 30</span>
+          </div>
+          <div class="con-data-row">
+            <span class="con-data-check">✓</span>
+            <span class="con-data-name">IT 行为日志 (Splunk SIEM)</span>
+            <span class="con-data-count">.log × 11</span>
+          </div>
+        </div>
+        <div class="con-disclosure" onclick="this.classList.toggle('open')">
+          <span class="con-disclosure-icon">›</span>
+          <span>查看数据质量报告</span>
+        </div>
+        <div class="con-disclosure-content">
+          • SHA-256 完整性校验：75/75 通过<br>
+          • 重复文件检测（MinHash LSH）：0 重复<br>
+          • PII 脱敏（GDPR Art.4 / PIPL Art.4）：自动替换 47 个身份字段<br>
+          • Schema 一致性：所有 CSV 字段映射到统一证据 schema v2.4<br>
+          • 时间戳归一化：UTC+0 标准化完成<br>
+          • 接入耗时：12.3 秒<br>
+          • Chain of custody：所有文件已写入不可篡改审计日志（Merkle root: 0x7f3a2b1c…）
+        </div>
+      </div>
+
+      <button class="con-primary-btn" onclick="conStartInvestigation()">
+        启动 7-Agent 调查管线 →
+      </button>
+      <div style="text-align:center;font-size:11.5px;color:var(--t3);margin-top:10px">
+        预计耗时 4–8 小时（演示模式压缩至 ~3 分钟）· 符合 EU AI Act Art.14 人机协同要求
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ Sub-screen 3: INVESTIGATE (CORE DRAMA) ══ -->
+  <div class="con-sub" id="con-sub-investigate">
+    <div class="con-wrap">
+
+      <div class="con-phases">
+        <div class="con-phase done">
+          <div class="con-phase-dot">✓</div>
+          <div class="con-phase-label">立项</div>
+        </div>
+        <div class="con-phase-line done"></div>
+        <div class="con-phase active">
+          <div class="con-phase-dot">2</div>
+          <div class="con-phase-label">调查</div>
+        </div>
+        <div class="con-phase-line"></div>
+        <div class="con-phase disabled">
+          <div class="con-phase-dot">3</div>
+          <div class="con-phase-label">决议</div>
+        </div>
+      </div>
+
+      <div class="con-screen-title">PHASE 2 · LIVE INVESTIGATION</div>
+      <div class="con-screen-h1">调查进行中</div>
+
+      <div class="con-pipe-wrap">
+        <div class="con-pipe-step-info">
+          <span class="con-pipe-step-num" id="con-step-num">Step 1 of 12 · 初始化</span>
+          <span class="con-pipe-elapsed" id="con-elapsed">00:00 elapsed</span>
+        </div>
+
+        <!-- 7 agent dots -->
+        <div class="con-agents" id="con-agents">
+          <div class="con-agent" data-agent="A0"><div class="con-agent-dot">A0</div><div class="con-agent-label">Orchestrator</div></div>
+          <div class="con-agent" data-agent="A1"><div class="con-agent-dot">A1</div><div class="con-agent-label">Doc Intel</div></div>
+          <div class="con-agent" data-agent="A2"><div class="con-agent-dot">A2</div><div class="con-agent-label">Entity Graph</div></div>
+          <div class="con-agent" data-agent="A3"><div class="con-agent-dot">A3</div><div class="con-agent-label">Statistical</div></div>
+          <div class="con-agent" data-agent="A4"><div class="con-agent-dot">A4</div><div class="con-agent-label">Behavioral</div></div>
+          <div class="con-agent" data-agent="A5"><div class="con-agent-dot">A5</div><div class="con-agent-label">Hypothesis</div></div>
+          <div class="con-agent" data-agent="A6"><div class="con-agent-dot">A6</div><div class="con-agent-label">Reporter</div></div>
+        </div>
+
+        <!-- Active agent reasoning -->
+        <div class="con-agent-active-name" id="con-active-name">A0 · Orchestrator</div>
+        <div class="con-agent-active-sub" id="con-active-sub">Layer 1 · 状态机调度</div>
+
+        <div class="con-stream" id="con-stream"></div>
+
+        <div class="con-stream-meta">
+          <div class="con-stream-meta-item">Tools called: <span class="con-stream-meta-val" id="con-tools-count">0</span></div>
+          <div class="con-stream-meta-item">Tokens: <span class="con-stream-meta-val" id="con-tokens">0</span> / 200K</div>
+          <div class="con-stream-meta-item">Cost: <span class="con-stream-meta-val" id="con-cost">€0.000</span></div>
+          <div class="con-stream-meta-item" style="margin-left:auto">Trace: <span style="color:var(--t1)">trace_4f2d1e8a</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ Sub-screen 4: FINDINGS ══ -->
+  <div class="con-sub" id="con-sub-findings">
+    <div class="con-wrap-narrow">
+
+      <div class="con-phases">
+        <div class="con-phase done"><div class="con-phase-dot">✓</div><div class="con-phase-label">立项</div></div>
+        <div class="con-phase-line done"></div>
+        <div class="con-phase done"><div class="con-phase-dot">✓</div><div class="con-phase-label">调查</div></div>
+        <div class="con-phase-line"></div>
+        <div class="con-phase active"><div class="con-phase-dot">3</div><div class="con-phase-label">决议</div></div>
+      </div>
+
+      <div class="con-screen-title">CASE FINDINGS</div>
+      <div class="con-screen-h1" style="margin-bottom:12px">调查发现</div>
+
+      <div class="con-conf-display">
+        <div class="con-conf-num"><span id="con-conf-val">0</span><span class="pct">%</span></div>
+        <div class="con-conf-bar-wrap">
+          <div class="con-conf-bar"><div class="con-conf-bar-fill" id="con-conf-fill"></div></div>
+        </div>
+        <div class="con-conf-label">三源加权综合置信度（通信 0.35 · 财务 0.40 · IT 0.25）</div>
+      </div>
+
+      <div class="con-section">
+        <div class="con-section-label">4 项关键发现 · 已通过 92% 阈值</div>
+        <ul class="con-findings-list" id="con-findings-list">
+          <li class="con-finding" onclick="showView('graph')">
+            <span class="con-finding-dot"></span>
+            <div class="con-finding-body">
+              <div class="con-finding-text">Marcus Chen 主导的采购回扣方案，与外部 ABC Electronics 合谋（共享同姓血缘关系）</div>
+              <div class="con-finding-meta">通信链 · 47 封邮件 · Louvain Q=0.74 同社群</div>
+            </div>
+            <span class="con-finding-arrow">→</span>
+          </li>
+          <li class="con-finding" onclick="showView('case')">
+            <span class="con-finding-dot"></span>
+            <div class="con-finding-body">
+              <div class="con-finding-text">ABC Electronics 报价较 DigiKey 市场基准高出 12.12σ（p &lt; 0.0001）</div>
+              <div class="con-finding-meta">合同 MC-2024-021 · €477K · 单价 $391.20 vs 基准 $32.40</div>
+            </div>
+            <span class="con-finding-arrow">→</span>
+          </li>
+          <li class="con-finding" onclick="showView('case')">
+            <span class="con-finding-dot"></span>
+            <div class="con-finding-body">
+              <div class="con-finding-text">127 份审计日志在 23:28 被批量删除，距内审启动仅 15 小时（z=113.0σ）</div>
+              <div class="con-finding-meta">EventCode 4663 · DBSCAN 检出 · 时间相关性 p &lt; 10⁻¹⁵</div>
+            </div>
+            <span class="con-finding-arrow">→</span>
+          </li>
+          <li class="con-finding" onclick="showView('graph')">
+            <span class="con-finding-dot"></span>
+            <div class="con-finding-body">
+              <div class="con-finding-text">€477K 资金流向开曼 SPV，最终受益人指向 Derek Chen（多层嵌套穿透）</div>
+              <div class="con-finding-meta">资金路径 4 跳 · UBO 解析 · FinCEN SAR 触发条件已满足</div>
+            </div>
+            <span class="con-finding-arrow">→</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="con-findings-actions">
+        <button class="con-ghost-btn" onclick="showView('graph')">查看关系图谱</button>
+        <button class="con-ghost-btn" onclick="showView('case')">查看 12 步调查详情</button>
+        <button class="con-ghost-btn" onclick="conGoSub('decide')" style="margin-left:auto;background:var(--blue);color:#fff;border-color:var(--blue)">进入决议 →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ Sub-screen 5: DECIDE ══ -->
+  <div class="con-sub" id="con-sub-decide">
+    <div class="con-wrap-narrow">
+
+      <div class="con-phases">
+        <div class="con-phase done"><div class="con-phase-dot">✓</div><div class="con-phase-label">立项</div></div>
+        <div class="con-phase-line done"></div>
+        <div class="con-phase done"><div class="con-phase-dot">✓</div><div class="con-phase-label">调查</div></div>
+        <div class="con-phase-line done"></div>
+        <div class="con-phase active"><div class="con-phase-dot">3</div><div class="con-phase-label">决议</div></div>
+      </div>
+
+      <div class="con-screen-title">PHASE 3 · FINAL DECISION</div>
+      <div class="con-screen-h1">最终决议</div>
+
+      <div class="con-decide-rec">基于 92% 综合置信度，MultiTrace 推荐：</div>
+
+      <ul class="con-decide-list">
+        <li class="con-decide-item">
+          <span class="con-decide-check">✓</span>
+          <span>启动 Tier 1 纪律处分流程（CPO 立即停职 + 法务介入）</span>
+        </li>
+        <li class="con-decide-item">
+          <span class="con-decide-check">✓</span>
+          <span>移交财务诈骗指控至 Legal（依据：刑法第 271 条 · 职务侵占）</span>
+        </li>
+        <li class="con-decide-item">
+          <span class="con-decide-check">✓</span>
+          <span>启动 €477K 资金追回程序（Clawback + 民事保全）</span>
+        </li>
+        <li class="con-decide-item">
+          <span class="con-decide-check">✓</span>
+          <span>提交 SAR 可疑交易报告（FinCEN-compliant 模板）</span>
+        </li>
+        <li class="con-decide-item">
+          <span class="con-decide-check">✓</span>
+          <span>归档 75 项证据链（SHA-256 + Merkle root，符合电子签名法第 8 条）</span>
+        </li>
+      </ul>
+
+      <div class="con-section-label" style="margin-top:8px">合规验证</div>
+      <div class="con-compliance-row">
+        <span class="con-compliance-pill">✓ ACFE FEM §3-7</span>
+        <span class="con-compliance-pill">✓ EU AI Act Art.14</span>
+        <span class="con-compliance-pill">✓ GDPR Art.22</span>
+        <span class="con-compliance-pill">✓ 电子签名法 §8</span>
+        <span class="con-compliance-pill">✓ FinCEN SAR</span>
+      </div>
+
+      <button class="con-primary-btn" onclick="conApproveFinal()" id="con-approve-final-btn">
+        审批通过并生成最终报告
+      </button>
+
+      <button class="con-ghost-btn" style="width:100%;margin-top:8px" onclick="conToast('反馈已记录 · A5 将重新评估')">
+        请求修改建议
+      </button>
+
+      <div class="con-report-anim" id="con-report-anim">
+        <div class="con-report-icon">📋</div>
+        <div class="con-report-title">最终报告已生成</div>
+        <div class="con-report-desc">
+          47 页 · 75 项证据 · SHA-256 已封装 · 审计日志已签名<br>
+          <span style="font-family:'JetBrains Mono','SF Mono',monospace;font-size:11px;opacity:.85">
+            Report ID: RPT-INV-2026-0042 · sealed at <span id="con-report-time">14:35:42</span>
+          </span>
+        </div>
+        <div class="con-report-actions">
+          <button class="con-report-btn" onclick="conToast('PDF 47 页已下载')">下载 PDF</button>
+          <button class="con-report-btn" onclick="conToast('已发送至 sarah.liu@deloitte.com')">发送至 Legal</button>
+          <button class="con-report-btn" onclick="conToast('日历已创建：2 小时后召开会议')">召集复核会议</button>
+          <button class="con-report-btn" onclick="conGoSub('home')">回到工作台</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /#view-console -->
+
+<!-- HITL approval modal (Console-specific) -->
+<div class="con-hitl-overlay" id="con-hitl-overlay">
+  <div class="con-hitl-box">
+    <div class="con-hitl-icon">⏸</div>
+    <div class="con-hitl-title">需要您的审批 (Tier 1)</div>
+    <div class="con-hitl-desc">
+      Agent 5 已基于 5 项证据维度形成假设，依据 <strong>EU AI Act Art.14</strong> 必须由调查员签字才能继续推进至 Reporter Agent。
+    </div>
+    <div class="con-hitl-quote">
+      "Marcus Chen 主导采购回扣方案，与外部 ABC Electronics（实控人 Derek Chen）共谋，CFO Oliver Hartmann 嫌疑配合放款，€477K 已转移至开曼 SPV。"
+    </div>
+    <div class="con-hitl-meta">
+      <span class="con-hitl-meta-key">综合置信度</span>
+      <span class="con-hitl-meta-val">92% (三源加权)</span>
+      <span class="con-hitl-meta-key">关键证据</span>
+      <span class="con-hitl-meta-val">47 项 · 已 SHA-256 封装</span>
+      <span class="con-hitl-meta-key">合规门</span>
+      <span class="con-hitl-meta-val">EU AI Act Art.14 · GDPR Art.22</span>
+      <span class="con-hitl-meta-key">5W 闭环</span>
+      <span class="con-hitl-meta-val">完整 (Who/What/When/Where/Why)</span>
+    </div>
+    <div class="con-hitl-actions">
+      <button class="con-primary-btn" onclick="conHitlApprove()">审批通过并继续</button>
+      <button class="con-ghost-btn" onclick="conToast('已记录修改请求 · A5 将重新评估')" style="text-align:center;margin-top:4px">要求 A5 重新评估</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
      VIEW: INTAKE (Step 0 — Data Ingestion Simulation)
 ════════════════════════════════════════════════ -->
 <div class="view" id="view-intake">
@@ -3156,6 +3860,11 @@ function showView(name){
     setTimeout(renderGraph, 60);
   }
 
+  // Console view init — always reset to home sub
+  if(name==='console') {
+    conGoSub('home');
+  }
+
   // Intake view: reset launch button state
   if(name==='intake') {
     const btn = document.getElementById('intake-launch-btn');
@@ -3337,6 +4046,543 @@ function selectGraphNode(id){
     <div class="graph-detail-reason"><strong>判定原因：</strong>${n.reason}</div>
     ${n.evid ? `<div class="graph-detail-evidence">📎 关键证据：${n.evid}</div>` : ''}
   `;
+}
+
+/* ══════════════════════════════════════════════
+   CONSOLE — Investigation Workbench JS Engine
+══════════════════════════════════════════════ */
+
+// ── Sub-screen routing ──
+function conGoSub(name){
+  document.querySelectorAll('.con-sub').forEach(s=>s.classList.remove('active'));
+  const target = document.getElementById('con-sub-'+name);
+  if(target) target.classList.add('active');
+  // Top context bar visible only inside a case
+  const tb = document.getElementById('con-topbar');
+  if(tb) tb.style.display = (name==='home') ? 'none' : 'flex';
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function conEnterCase(){
+  conGoSub('setup');
+}
+
+function conToast(msg){
+  showToast('ℹ︎', msg);
+}
+
+// ── Pipeline launch ──
+let conPipelineRunning = false;
+let conTokens = 0;
+let conTools = 0;
+let conCost = 0;
+let conElapsed = 0;
+let conElapsedTimer = null;
+let conActiveAgent = 'A0';
+
+function conStartInvestigation(){
+  conGoSub('investigate');
+  setTimeout(()=>{ runPipeline(); }, 600);
+}
+
+function conSetActiveAgent(id, name, sub){
+  conActiveAgent = id;
+  document.querySelectorAll('.con-agent').forEach(el=>{
+    if(el.dataset.agent === id){
+      el.classList.remove('done');
+      el.classList.add('active');
+    }
+  });
+  document.getElementById('con-active-name').textContent = id + ' · ' + name;
+  document.getElementById('con-active-sub').textContent = sub;
+}
+
+function conMarkAgentDone(id){
+  document.querySelectorAll('.con-agent').forEach(el=>{
+    if(el.dataset.agent === id){
+      el.classList.remove('active');
+      el.classList.add('done');
+    }
+  });
+}
+
+function conSetStep(text){
+  document.getElementById('con-step-num').textContent = text;
+}
+
+function conPushLine(html, cls){
+  const stream = document.getElementById('con-stream');
+  if(!stream) return;
+  // remove cursor from previous line
+  const oldCursor = stream.querySelector('.con-stream-cursor');
+  if(oldCursor) oldCursor.remove();
+  const div = document.createElement('div');
+  div.className = 'con-stream-line ' + (cls || '');
+  div.innerHTML = html;
+  stream.appendChild(div);
+  stream.scrollTop = stream.scrollHeight;
+  return div;
+}
+
+function conClearStream(){
+  document.getElementById('con-stream').innerHTML = '';
+}
+
+// Streaming typewriter — uses requestAnimationFrame for smooth animation
+// Falls back to instant render when tab is hidden (avoids freezing the script)
+function conTypeLine(html, cls, charDelay){
+  return new Promise(resolve=>{
+    const stream = document.getElementById('con-stream');
+    if(!stream){ resolve(); return; }
+    const oldCursor = stream.querySelector('.con-stream-cursor');
+    if(oldCursor) oldCursor.remove();
+    const div = document.createElement('div');
+    div.className = 'con-stream-line ' + (cls || '');
+    stream.appendChild(div);
+
+    const hasHtml = /<[a-z]/i.test(html);
+
+    // Skip animation: HTML content OR tab in background (rAF would freeze)
+    if(hasHtml || document.hidden){
+      div.innerHTML = html;
+      stream.scrollTop = stream.scrollHeight;
+      setTimeout(resolve, 12);
+      return;
+    }
+
+    const text = html;
+    const ms = charDelay || 14; // default 14ms / char
+    let i = 0;
+    let lastTime = 0;
+    const step = (now)=>{
+      // If user switched away mid-animation, finish instantly
+      if(document.hidden){
+        i = text.length;
+        div.textContent = text;
+        stream.scrollTop = stream.scrollHeight;
+        resolve();
+        return;
+      }
+      if(i >= text.length){
+        const cur = document.createElement('span');
+        cur.className = 'con-stream-cursor';
+        div.appendChild(cur);
+        stream.scrollTop = stream.scrollHeight;
+        resolve();
+        return;
+      }
+      if(!lastTime) lastTime = now;
+      const dt = now - lastTime;
+      const advance = Math.max(1, Math.floor(dt / ms));
+      i = Math.min(text.length, i + advance);
+      div.textContent = text.slice(0, i);
+      stream.scrollTop = stream.scrollHeight;
+      lastTime = now;
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+// Sleep — uses setTimeout (works even in hidden tab) but capped fast in background
+function conSleep(ms){
+  if(document.hidden) return new Promise(r=>setTimeout(r, Math.min(ms, 60)));
+  return new Promise(r=>setTimeout(r, ms));
+}
+
+function conIncrTokens(n){
+  conTokens += n;
+  document.getElementById('con-tokens').textContent = conTokens.toLocaleString();
+  conCost += n * 0.000035;
+  document.getElementById('con-cost').textContent = '€' + conCost.toFixed(3);
+}
+
+function conIncrTools(){
+  conTools++;
+  document.getElementById('con-tools-count').textContent = conTools;
+}
+
+function conTickElapsed(){
+  conElapsed++;
+  const m = String(Math.floor(conElapsed/60)).padStart(2,'0');
+  const s = String(conElapsed%60).padStart(2,'0');
+  document.getElementById('con-elapsed').textContent = m+':'+s+' elapsed';
+}
+
+// ── THE CORE PIPELINE SCRIPT ──
+async function runPipeline(){
+  if(conPipelineRunning) return;
+  conPipelineRunning = true;
+  conTokens = 0; conTools = 0; conCost = 0; conElapsed = 0;
+  document.getElementById('con-tokens').textContent = '0';
+  document.getElementById('con-tools-count').textContent = '0';
+  document.getElementById('con-cost').textContent = '€0.000';
+  conClearStream();
+
+  // Pipeline status
+  const dot = document.getElementById('con-pipe-status-dot');
+  const txt = document.getElementById('con-pipe-status-text');
+  if(dot){ dot.classList.add('running'); }
+  if(txt){ txt.textContent = '运行中'; }
+
+  conElapsedTimer = setInterval(conTickElapsed, 1000);
+
+  // ═══ A0 Orchestrator ═══
+  conSetActiveAgent('A0', 'Orchestrator', 'Layer 1 · 状态机调度');
+  conSetStep('Step 1 of 12 · 初始化');
+  await conTypeLine('Pipeline run_x9k2m initialized', 'con-stream-thought');
+  await conSleep(200);
+  await conTypeLine('Trace ID: trace_4f2d1e8a · DAG nodes: 7', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('Loading case INV-2026-0042 from Postgres...', 'con-stream-thought');
+  await conSleep(400);
+  conIncrTools(); conIncrTokens(180);
+  await conTypeLine('🔧 Tool: case.fetch(id="INV-2026-0042") → 142ms', 'con-stream-tool');
+  await conSleep(350);
+  await conTypeLine('Validating evidence integrity (SHA-256, 75 files)...', 'con-stream-thought');
+  await conSleep(700);
+  await conTypeLine('✓ All 75 files verified · 0 tampered', 'con-stream-ok');
+  await conSleep(120);
+  await conTypeLine('✓ Chain of custody initialized · Merkle root: 0x7f3a2b1c…', 'con-stream-ok');
+  await conSleep(120);
+  await conTypeLine('✓ EU AI Act Art.14 compliance gate passed', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('Dispatching to A1 Document Intelligence Agent…', 'con-stream-thought');
+  await conSleep(450);
+  conMarkAgentDone('A0');
+
+  // ═══ A1 Document Intelligence ═══
+  conSetActiveAgent('A1', 'Document Intelligence', 'Layer 2 · 文档情报官');
+  conSetStep('Step 2 of 12 · 文档解析');
+  await conTypeLine('Initializing pipeline:', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('  • Tesseract OCR 5.3.0 (CJK + Latin)', 'con-stream-thought');
+  await conSleep(80);
+  await conTypeLine('  • LayoutLMv3-large (Microsoft, 2022)', 'con-stream-thought');
+  await conSleep(80);
+  await conTypeLine('  • claude-opus-4.5 (entity extraction)', 'con-stream-thought');
+  await conSleep(300);
+  await conTypeLine('Parsing 14 PDFs in parallel (max_workers=4)…', 'con-stream-thought');
+  await conSleep(700);
+  conIncrTools(); conIncrTokens(2100);
+  await conTypeLine('✓ MC-2024-021_AS-700_€477K.pdf       (OCR conf 0.97)', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('✓ MC-2024-018_components_€312K.pdf   (OCR conf 0.94)', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('✓ INV-MERIDIAN-001_partial.pdf       (OCR conf 0.89)', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('✓ ABC_supplier_qualification.pdf     (OCR conf 0.96)', 'con-stream-ok');
+  await conSleep(150);
+  await conTypeLine('  ... 10 more files parsed', 'con-stream-thought');
+  await conSleep(350);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: claude.entity_extract', 'con-stream-tool');
+  await conSleep(180);
+  await conTypeLine('   schema: {entity, type, role, amount, date}', 'con-stream-tool');
+  await conSleep(450);
+  conIncrTokens(1240);
+  await conTypeLine('📊 Extracted: 47 entities · 23 monetary clauses · 14 dates', 'con-stream-obs');
+  await conSleep(160);
+  await conTypeLine('   F1 = 0.94 · Cost: $0.041 · Latency: 1.8s', 'con-stream-cite');
+  await conSleep(450);
+  conMarkAgentDone('A1');
+
+  // ═══ A2 Entity Resolution ═══
+  conSetActiveAgent('A2', 'Entity Resolution & Graph', 'Layer 2 · 实体图谱官');
+  conSetStep('Step 5 of 12 · 实体消歧 + 社群发现');
+  await conTypeLine('Loading entity_resolution_v2.4 model', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('Embedding model: mxbai-embed-large-v1 (1024d)', 'con-stream-thought');
+  await conSleep(300);
+  await conTypeLine('Disambiguating supplier name variants…', 'con-stream-thought');
+  await conSleep(450);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: neo4j.cypher', 'con-stream-tool');
+  await conSleep(120);
+  await conTypeLine('   MATCH (c:Company)', 'con-stream-tool');
+  await conSleep(80);
+  await conTypeLine('   WHERE c.name CONTAINS \'Meridian\' OR c.name CONTAINS \'ABC\'', 'con-stream-tool');
+  await conSleep(80);
+  await conTypeLine('   RETURN c.id, c.regNumber, c.aliases', 'con-stream-tool');
+  await conSleep(450);
+  conIncrTokens(380);
+  await conTypeLine('📊 Found 3 candidates:', 'con-stream-obs');
+  await conSleep(150);
+  await conTypeLine('   • ABC Electronics Ltd          regNo: 91110108MA01XYZ123', 'con-stream-obs');
+  await conSleep(120);
+  await conTypeLine('   • Meridian Components Ltd.     regNo: 91110108MA01XYZ123', 'con-stream-obs');
+  await conSleep(120);
+  await conTypeLine('   • Meridian (informal alias)    regNo: 91110108MA01XYZ123', 'con-stream-obs');
+  await conSleep(400);
+  await conTypeLine('Similarity scores:', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('   cosine_sim=0.87 · name_jaccard=0.62 · regNo_match=1.0', 'con-stream-thought');
+  await conSleep(200);
+  await conTypeLine('   Composite confidence: 0.93 > threshold 0.85', 'con-stream-thought');
+  await conSleep(180);
+  await conTypeLine('✓ Merged into entity ENT-ABC-001 (3 aliases)', 'con-stream-ok');
+  await conSleep(450);
+  await conTypeLine('Running Louvain community detection (resolution=1.0)…', 'con-stream-thought');
+  await conSleep(300);
+  conPushLine('   <span class="con-stream-formula">Q = (1/2m) Σᵢⱼ [Aᵢⱼ – kᵢkⱼ/(2m)] · δ(cᵢ, cⱼ)</span>', 'con-stream-thought');
+  await conSleep(600);
+  conIncrTools(); conIncrTokens(620);
+  await conTypeLine('✓ Q = 0.74 · 3 communities detected', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('✓ Core community: 4 nodes (Marcus / Derek / ABC / Cayman SPV)', 'con-stream-ok');
+  await conSleep(380);
+  conPushLine('⚠ <strong>Surname analysis:</strong> "Chen" appears in <strong>Marcus Chen</strong> (CPO, internal) and <strong>Derek Chen</strong> (ABC, external) → flagged for kinship verification', 'con-stream-warn');
+  await conSleep(800);
+  conMarkAgentDone('A2');
+
+  // ═══ A3 Statistical ═══
+  conSetActiveAgent('A3', 'Statistical Anomaly', 'Layer 2 · 统计核查官');
+  conSetStep('Step 7a of 12 · 价格基准比对');
+  await conTypeLine('Loading price baseline:', 'con-stream-thought');
+  await conSleep(120);
+  await conTypeLine('   • DigiKey REST API (US distributor)', 'con-stream-thought');
+  await conSleep(80);
+  await conTypeLine('   • CCGP 政采云历史数据 (zh)', 'con-stream-thought');
+  await conSleep(280);
+  await conTypeLine('Querying AS-700 reference price…', 'con-stream-thought');
+  await conSleep(300);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: digikey.api/v3/products/search', 'con-stream-tool');
+  await conSleep(700);
+  conPushLine('   <span style="color:#dc2626">❌ Connection timeout (5s) — retrying with exponential backoff…</span>', 'con-stream-line');
+  await conSleep(900);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: digikey.api/v3/products/search (retry 1)', 'con-stream-tool');
+  await conSleep(280);
+  await conTypeLine('   ✓ 200 OK · 142ms', 'con-stream-ok');
+  await conSleep(250);
+  conIncrTokens(180);
+  await conTypeLine('📊 Result:', 'con-stream-obs');
+  await conSleep(120);
+  await conTypeLine('   market_avg = $32.40', 'con-stream-obs');
+  await conSleep(80);
+  await conTypeLine('   market_std = $3.50', 'con-stream-obs');
+  await conSleep(80);
+  await conTypeLine('   n_quotes   = 47 (last 90 days)', 'con-stream-obs');
+  await conSleep(380);
+  await conTypeLine('Contract price: $391.20 (per AS-700 unit, MC-2024-021)', 'con-stream-thought');
+  await conSleep(280);
+  await conTypeLine('Computing z-score…', 'con-stream-thought');
+  await conSleep(200);
+  conPushLine('   <span class="con-stream-formula">z = (391.20 – 32.40) / 3.50 = 102.5</span>', 'con-stream-thought');
+  await conSleep(550);
+  await conTypeLine('Variance unrealistic — switching to robust estimator (MAD)…', 'con-stream-warn');
+  await conSleep(450);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: stats.mad_zscore(price=391.20, baseline=AS-700)', 'con-stream-tool');
+  await conSleep(280);
+  conIncrTokens(140);
+  conPushLine('📊 <span class="con-stream-formula">MAD-based z-score = 12.12σ</span>', 'con-stream-obs');
+  await conSleep(150);
+  await conTypeLine('   p-value < 0.0001 (extremely anomalous)', 'con-stream-obs');
+  await conSleep(450);
+  conPushLine('🔴 <span class="con-stream-critical">PRICE ANOMALY DETECTED · 12.12σ EXCEEDS 5σ CRITICAL THRESHOLD</span>', 'con-stream-line');
+  await conSleep(400);
+  await conTypeLine('Per ACFE FEM §6.2.3 — escalating to A5 Hypothesis Agent', 'con-stream-cite');
+  await conSleep(500);
+  conMarkAgentDone('A3');
+
+  // ═══ A4 Behavioral ═══
+  conSetActiveAgent('A4', 'Behavioral Profiling', 'Layer 2 · 行为画像官');
+  conSetStep('Step 7b of 12 · UEBA 时序异常');
+  await conTypeLine('Loading UEBA baseline (90-day rolling window)', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('Behavioral dimensions: 23 (login / email / file_access / approval / etc.)', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('Model: Isolation Forest + LSTM-AE hybrid', 'con-stream-thought');
+  await conSleep(300);
+  await conTypeLine('Profiling Marcus Chen (USR-CPO-001)…', 'con-stream-thought');
+  await conSleep(400);
+  conIncrTokens(290);
+  await conTypeLine('📊 Off-hours email rate:', 'con-stream-obs');
+  await conSleep(120);
+  await conTypeLine('   baseline μ = 8.2% (σ = 2.7%)', 'con-stream-obs');
+  await conSleep(120);
+  await conTypeLine('   last 7 days = 47.3%', 'con-stream-obs');
+  await conSleep(150);
+  conPushLine('   <span class="con-stream-formula">z-score = (47.3 – 8.2) / 2.7 = 14.5σ</span>', 'con-stream-obs');
+  await conSleep(450);
+  conIncrTools();
+  await conTypeLine('🔧 Tool: splunk.search', 'con-stream-tool');
+  await conSleep(120);
+  await conTypeLine('   index=audit EventCode=4663 user=marcus.chen earliest=-30d', 'con-stream-tool');
+  await conSleep(450);
+  conIncrTokens(180);
+  await conTypeLine('📊 Returned 1,247 events · running DBSCAN (eps=0.3, min_samples=5)…', 'con-stream-obs');
+  await conSleep(550);
+  conPushLine('🔴 <span class="con-stream-critical">ANOMALY CLUSTER DETECTED</span>', 'con-stream-line');
+  await conSleep(180);
+  await conTypeLine('   Time:    2024-01-15 23:28:14', 'con-stream-warn');
+  await conSleep(120);
+  await conTypeLine('   User:    marcus.chen', 'con-stream-warn');
+  await conSleep(120);
+  await conTypeLine('   Action:  Bulk delete (127 files)', 'con-stream-warn');
+  await conSleep(120);
+  await conTypeLine('   Files:   contracts/ + emails/ + audit_logs/', 'con-stream-warn');
+  await conSleep(380);
+  await conTypeLine('Cross-referencing with internal audit timeline…', 'con-stream-thought');
+  await conSleep(280);
+  await conTypeLine('   2024-01-15 08:00 — Internal audit announcement', 'con-stream-thought');
+  await conSleep(100);
+  await conTypeLine('   2024-01-15 23:28 — 127 files deleted (Δt = 15h 28m)', 'con-stream-thought');
+  await conSleep(380);
+  conPushLine('   <span class="con-stream-formula">Correlation z-score = 113.0σ · p &lt; 10⁻¹⁵</span>', 'con-stream-obs');
+  await conSleep(450);
+  conPushLine('⚠ Per <span class="con-stream-cite">ACFE FEM §4.7</span> — <strong>Concealment Behavior pattern matched</strong>', 'con-stream-warn');
+  await conSleep(500);
+  conMarkAgentDone('A4');
+
+  // ═══ A5 Hypothesis (Triangulation) ═══
+  conSetActiveAgent('A5', 'Hypothesis Validation', 'Layer 3 · 假设验证官');
+  conSetStep('Step 8 of 12 · Triangulation 5W 闭环');
+  await conTypeLine('Synthesizing findings from A1–A4 (Triangulation per ACFE FEM §3.4)', 'con-stream-thought');
+  await conSleep(380);
+  await conTypeLine('Building 5W causal chain…', 'con-stream-thought');
+  await conSleep(450);
+  conIncrTools(); conIncrTokens(1820);
+
+  conPushLine('<strong>WHO   </strong> Marcus Chen (CPO) + Derek Chen (ABC owner) + Oliver Hartmann (CFO accomplice)', 'con-stream-obs');
+  await conSleep(220);
+  conPushLine('<strong>WHAT  </strong> Procurement kickback via supplier price inflation → offshore SPV', 'con-stream-obs');
+  await conSleep(220);
+  conPushLine('<strong>WHEN  </strong> 2024-Q1 · peak 2024-01-05 to 2024-01-15 · concealment trigger 2024-01-15', 'con-stream-obs');
+  await conSleep(220);
+  conPushLine('<strong>WHERE </strong> Procurement → Finance → Cayman SPV → personal account', 'con-stream-obs');
+  await conSleep(220);
+  conPushLine('<strong>WHY   </strong> Personal enrichment ≈ €477K (single tx) · est. total exposure €1.2M–€2.8M', 'con-stream-obs');
+  await conSleep(500);
+
+  await conTypeLine('Computing composite confidence (3-source weighted)…', 'con-stream-thought');
+  await conSleep(280);
+  await conTypeLine('   Source 1 — Communication evidence    weight 0.35 · conf 0.90', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('   Source 2 — Contract/Finance evidence  weight 0.40 · conf 0.95', 'con-stream-thought');
+  await conSleep(150);
+  await conTypeLine('   Source 3 — IT logs evidence           weight 0.25 · conf 0.88', 'con-stream-thought');
+  await conSleep(280);
+  conPushLine('   <span class="con-stream-formula">Composite = 0.35×0.90 + 0.40×0.95 + 0.25×0.88 = 0.915</span>', 'con-stream-thought');
+  await conSleep(550);
+  conPushLine('✓ <strong>Composite confidence ≈ 92%</strong>', 'con-stream-ok');
+  await conSleep(380);
+
+  conPushLine('⏸ <strong>HITL APPROVAL REQUIRED (Tier 1)</strong> — per EU AI Act Art.14', 'con-stream-warn');
+  await conSleep(700);
+
+  // Show HITL modal
+  document.getElementById('con-hitl-overlay').classList.add('active');
+}
+
+// ── HITL approval handler ──
+async function conHitlApprove(){
+  document.getElementById('con-hitl-overlay').classList.remove('active');
+  await conSleep(300);
+
+  // Continue A5
+  await conTypeLine('✓ Approval logged 14:32:15 by user YL', 'con-stream-ok');
+  await conSleep(180);
+  await conTypeLine('  Audit trail hash: 0x7f3a2b1c… (signed, immutable)', 'con-stream-cite');
+  await conSleep(280);
+  await conTypeLine('Computing final risk score…', 'con-stream-thought');
+  await conSleep(280);
+  conPushLine('📊 <strong>Final composite risk score: 99/100 (CRITICAL)</strong>', 'con-stream-obs');
+  await conSleep(280);
+  await conTypeLine('Compliance gates verified:', 'con-stream-thought');
+  await conSleep(120);
+  await conTypeLine('  ✓ ACFE FEM §3-7 (investigation methodology)', 'con-stream-ok');
+  await conSleep(80);
+  await conTypeLine('  ✓ EU AI Act Art.14 (human oversight)', 'con-stream-ok');
+  await conSleep(80);
+  await conTypeLine('  ✓ GDPR Art.22 (automated decision rights)', 'con-stream-ok');
+  await conSleep(380);
+  conMarkAgentDone('A5');
+
+  // ═══ A6 Reporter ═══
+  conSetActiveAgent('A6', 'Report Generation', 'Layer 3 · 合规报告官');
+  conSetStep('Step 10 of 12 · 报告生成');
+  await conTypeLine('Generating deliverables…', 'con-stream-thought');
+  await conSleep(300);
+  conIncrTools(); conIncrTokens(3400);
+  await conTypeLine('🔧 Tool: claude.compose_report (template=ACFE-disciplinary-v3)', 'con-stream-tool');
+  await conSleep(550);
+  await conTypeLine('  ✓ Executive Summary (1 page)', 'con-stream-ok');
+  await conSleep(140);
+  await conTypeLine('  ✓ Findings & Evidence Chain (12 pages)', 'con-stream-ok');
+  await conSleep(140);
+  await conTypeLine('  ✓ Tier 1 Disciplinary Recommendation', 'con-stream-ok');
+  await conSleep(140);
+  await conTypeLine('  ✓ €477K Clawback Procedure Draft', 'con-stream-ok');
+  await conSleep(140);
+  await conTypeLine('  ✓ SAR Filing Preparation (FinCEN-compliant)', 'con-stream-ok');
+  await conSleep(140);
+  await conTypeLine('  ✓ Chain of Custody Manifest (sha256 × 75)', 'con-stream-ok');
+  await conSleep(380);
+  await conTypeLine('Total: 47 pages · 2,340 words · 75 evidence items', 'con-stream-thought');
+  await conSleep(220);
+  await conTypeLine('Pipeline complete · Tokens: ' + conTokens.toLocaleString() + ' / 200K · Cost: ' + document.getElementById('con-cost').textContent, 'con-stream-cite');
+  await conSleep(450);
+  conMarkAgentDone('A6');
+
+  // Stop elapsed
+  if(conElapsedTimer){ clearInterval(conElapsedTimer); conElapsedTimer = null; }
+  const dot = document.getElementById('con-pipe-status-dot');
+  const txt = document.getElementById('con-pipe-status-text');
+  if(dot){ dot.classList.remove('running'); }
+  if(txt){ txt.textContent = '完成'; }
+
+  await conSleep(900);
+  // Transition to Findings
+  conGoSub('findings');
+  setTimeout(()=>{ conRevealFindings(); }, 250);
+
+  conPipelineRunning = false;
+}
+
+// ── Findings reveal ──
+function conRevealFindings(){
+  // Animate confidence number 0 → 92
+  const valEl = document.getElementById('con-conf-val');
+  const fillEl = document.getElementById('con-conf-fill');
+  const target = 92;
+  const dur = 1100;
+  const start = performance.now();
+  const tick = (now)=>{
+    const t = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const cur = Math.round(target * eased);
+    valEl.textContent = cur;
+    if(t < 1) requestAnimationFrame(tick);
+    else valEl.textContent = target;
+  };
+  requestAnimationFrame(tick);
+  setTimeout(()=>{ fillEl.style.width = '92%'; }, 60);
+
+  // Reveal findings one by one
+  const findings = document.querySelectorAll('#con-findings-list .con-finding');
+  findings.forEach((el, i)=>{
+    setTimeout(()=>{ el.classList.add('revealed'); }, 500 + i * 380);
+  });
+}
+
+// ── Final approval (Decide → Report) ──
+function conApproveFinal(){
+  const btn = document.getElementById('con-approve-final-btn');
+  btn.disabled = true;
+  btn.textContent = '✓ 已审批通过 · 报告封装中…';
+  setTimeout(()=>{
+    document.getElementById('con-report-anim').classList.add('active');
+    btn.textContent = '✓ 已完成';
+    // update report time to "now"
+    const now = new Date();
+    document.getElementById('con-report-time').textContent =
+      String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+  }, 1200);
 }
 
 /* ══════════════════════════════════════════════
