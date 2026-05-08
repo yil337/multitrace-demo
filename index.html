@@ -186,6 +186,106 @@ body{
 .view.active{display:block}
 
 /* ══════════════════════════════════════════════
+   VIEW: INTAKE (Step 0 — Data Ingestion)
+══════════════════════════════════════════════ */
+#view-intake{margin-top:var(--nav-h);min-height:calc(100vh - var(--nav-h));display:none;background:var(--bg2);padding:32px 0 60px}
+#view-intake.active{display:block}
+.intake-wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+.intake-hero{text-align:center;margin-bottom:28px}
+.intake-hero-label{font-size:11px;color:var(--blue);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.intake-hero-title{font-size:32px;font-weight:700;color:var(--t1);letter-spacing:-.5px;margin-bottom:10px}
+.intake-hero-sub{font-size:14px;color:var(--t3);max-width:760px;margin:0 auto;line-height:1.7}
+.intake-pipeline-bar{display:flex;align-items:center;justify-content:center;gap:12px;margin:22px auto 30px;padding:14px 22px;background:var(--bg1);border:1px solid var(--border);border-radius:10px;max-width:920px}
+.intake-pipe-step{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t3)}
+.intake-pipe-step.active{color:var(--blue);font-weight:600}
+.intake-pipe-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--bg3);color:var(--t3);font-size:11px;font-weight:700}
+.intake-pipe-step.active .intake-pipe-num{background:var(--blue);color:#fff}
+.intake-pipe-arrow{color:var(--t4);font-size:14px}
+.intake-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
+.intake-zone{background:var(--bg1);border:2px dashed var(--border);border-radius:12px;padding:18px;transition:all .2s}
+.intake-zone:hover{border-color:var(--blue);background:var(--blue-l)}
+.intake-zone-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.intake-zone-title{display:flex;align-items:center;gap:10px}
+.intake-zone-icon{width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.intake-zone-name{font-size:14px;font-weight:700;color:var(--t1)}
+.intake-zone-count{font-size:11px;color:var(--t3);margin-top:2px}
+.intake-zone-status{font-size:10px;font-weight:700;padding:4px 8px;border-radius:6px;background:#16a34a14;color:#16a34a;border:1px solid #16a34a40}
+.intake-files{max-height:144px;overflow-y:auto;background:var(--bg2);border-radius:6px;padding:8px;font-family:'SF Mono','Consolas',monospace;font-size:10.5px;color:var(--t2);line-height:1.7}
+.intake-files div{padding:2px 6px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.intake-files div:last-child{border-bottom:none}
+.intake-files-icon{color:var(--t4)}
+.intake-files-meta{margin-left:auto;color:var(--t4);font-size:9.5px}
+.intake-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.intake-stat{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+.intake-stat-val{font-size:24px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums}
+.intake-stat-label{font-size:10.5px;color:var(--t3);margin-top:4px;letter-spacing:.5px}
+.intake-launch{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:28px;background:linear-gradient(135deg,#1e3a8a,#1e40af);border-radius:14px;color:#fff;margin-bottom:18px}
+.intake-launch-title{font-size:16px;font-weight:600;text-align:center;line-height:1.5}
+.intake-launch-btn{padding:14px 36px;background:#fff;color:#1e40af;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.intake-launch-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.intake-launch-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.intake-launch-sub{font-size:11.5px;opacity:.85;text-align:center}
+.intake-progress{display:none}
+.intake-progress.active{display:block}
+.intake-progress-bar{height:6px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden;margin:10px 0}
+.intake-progress-fill{height:100%;background:linear-gradient(90deg,#60a5fa,#fff);width:0;transition:width .3s}
+.intake-progress-log{font-family:'SF Mono','Consolas',monospace;font-size:11px;background:rgba(0,0,0,.3);padding:10px;border-radius:6px;max-height:130px;overflow-y:auto;line-height:1.6;text-align:left}
+.intake-progress-log div{padding:1px 0;color:#cbd5e1}
+.intake-progress-log div.ok{color:#86efac}
+.intake-progress-log div.warn{color:#fde68a}
+.intake-rules-card{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:16px 20px}
+.intake-rules-title{font-size:12px;font-weight:700;color:var(--t1);letter-spacing:.5px;margin-bottom:10px}
+.intake-rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.intake-rule{font-size:11.5px;color:var(--t2);line-height:1.6;padding:8px 10px;background:var(--bg2);border-radius:6px;border-left:3px solid var(--blue)}
+.intake-rule code{background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:10.5px;color:var(--blue)}
+
+/* ══════════════════════════════════════════════
+   VIEW: GRAPH (Relationship Network)
+══════════════════════════════════════════════ */
+#view-graph{margin-top:var(--nav-h);min-height:calc(100vh - var(--nav-h));display:none;background:var(--bg2);padding:24px 0 60px}
+#view-graph.active{display:block}
+.graph-wrap{max-width:1300px;margin:0 auto;padding:0 28px}
+.graph-hero{margin-bottom:18px}
+.graph-hero-label{font-size:11px;color:var(--blue);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.graph-hero-title{font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-.3px;margin-bottom:6px}
+.graph-hero-sub{font-size:13px;color:var(--t3);max-width:880px;line-height:1.65}
+.graph-layout{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+.graph-canvas-wrap{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:16px;height:560px;position:relative;overflow:hidden}
+.graph-canvas-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;color:var(--t3)}
+.graph-legend{display:flex;align-items:center;gap:14px;font-size:11px}
+.graph-legend-item{display:flex;align-items:center;gap:5px;color:var(--t2)}
+.graph-legend-dot{width:10px;height:10px;border-radius:50%}
+#graph-svg{width:100%;height:calc(100% - 28px);cursor:grab}
+#graph-svg:active{cursor:grabbing}
+.gnode{cursor:pointer;transition:filter .2s}
+.gnode:hover circle{filter:drop-shadow(0 2px 8px rgba(30,64,175,.4))}
+.gnode-label{font-size:11px;font-weight:600;fill:var(--t1);pointer-events:none;text-anchor:middle}
+.gnode-sublabel{font-size:9px;fill:var(--t3);pointer-events:none;text-anchor:middle}
+.glink{stroke-opacity:.55;cursor:pointer}
+.glink:hover{stroke-opacity:1}
+.graph-side{display:flex;flex-direction:column;gap:14px}
+.graph-card{background:var(--bg1);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.graph-card-title{font-size:11px;font-weight:700;color:var(--t1);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.graph-card-title .count-chip{font-size:9.5px;background:var(--bg3);color:var(--t3);padding:2px 7px;border-radius:10px}
+.graph-people-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:11px}
+.graph-people-row:last-child{border-bottom:none}
+.graph-people-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.graph-people-name{font-weight:600;color:var(--t1);flex:1}
+.graph-people-role{color:var(--t3);font-size:10px}
+.graph-people-score{font-weight:700;color:var(--red);font-variant-numeric:tabular-nums;font-size:11px}
+.graph-metric{display:flex;justify-content:space-between;font-size:11.5px;padding:5px 0;color:var(--t2)}
+.graph-metric strong{color:var(--t1);font-variant-numeric:tabular-nums}
+.graph-detail-empty{font-size:11px;color:var(--t4);text-align:center;padding:14px 0;line-height:1.6}
+.graph-detail-name{font-size:14px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.graph-detail-role{font-size:11px;color:var(--t3);margin-bottom:10px}
+.graph-detail-score{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.graph-detail-score-val{font-size:22px;font-weight:700;color:var(--red);font-variant-numeric:tabular-nums}
+.graph-detail-score-bar{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.graph-detail-score-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--red))}
+.graph-detail-reason{font-size:11px;color:var(--t2);line-height:1.65;padding:8px 10px;background:var(--bg2);border-radius:6px}
+.graph-detail-evidence{margin-top:10px;font-size:10.5px;color:var(--t3);line-height:1.55}
+
+/* ══════════════════════════════════════════════
    SHARED COMPONENTS
 ══════════════════════════════════════════════ */
 
@@ -1895,7 +1995,9 @@ html[data-theme="dark"] .hitl-3-box{background:var(--green-m);color:#6ee7b7}
 
   <div class="nav-links">
     <button class="nav-link active" id="nav-home" onclick="showView('home')">主页</button>
-    <button class="nav-link" id="nav-case" onclick="showView('case')">示范案例 →</button>
+    <button class="nav-link" id="nav-intake" onclick="showView('intake')">数据摄取</button>
+    <button class="nav-link" id="nav-case" onclick="showView('case')">示范案例</button>
+    <button class="nav-link" id="nav-graph" onclick="showView('graph')">关系图谱 →</button>
   </div>
 
   <div class="nav-spacer"></div>
@@ -2576,6 +2678,161 @@ IT 行为日志 × 25% = 0.88 × 0.25 = 0.220
 </div><!-- /#view-home -->
 
 <!-- ══════════════════════════════════════════════
+     VIEW: INTAKE (Step 0 — Data Ingestion Simulation)
+════════════════════════════════════════════════ -->
+<div class="view" id="view-intake">
+  <div class="intake-wrap">
+
+    <div class="intake-hero">
+      <div class="intake-hero-label">STEP 0 · DATA INGESTION</div>
+      <div class="intake-hero-title">多源数据摄取与预检</div>
+      <div class="intake-hero-sub">
+        MultiTrace 通过标准接口接入企业 4 类异构数据：邮件、合同、财务流水、IT 日志。
+        每个文件在摄取阶段完成 SHA-256 哈希存档、PII 脱敏与结构化清洗，确保后续 7-Agent 调查管线获得可追溯的证据基础。
+        <strong style="color:var(--t1)">演示模式下采用结构化模拟数据；实际部署通过 Microsoft Graph API、ERP/SAP 接口、企业邮件网关等标准协议读取。</strong>
+      </div>
+    </div>
+
+    <div class="intake-pipeline-bar">
+      <div class="intake-pipe-step active"><span class="intake-pipe-num">0</span>数据摄取</div>
+      <span class="intake-pipe-arrow">→</span>
+      <div class="intake-pipe-step"><span class="intake-pipe-num">1-12</span>7-Agent 管线</div>
+      <span class="intake-pipe-arrow">→</span>
+      <div class="intake-pipe-step"><span class="intake-pipe-num">📊</span>关系图谱 + 报告</div>
+    </div>
+
+    <div class="intake-grid">
+      <!-- Email -->
+      <div class="intake-zone">
+        <div class="intake-zone-head">
+          <div class="intake-zone-title">
+            <div class="intake-zone-icon" style="background:#dbeafe;color:#1e40af">✉️</div>
+            <div>
+              <div class="intake-zone-name">邮件证据</div>
+              <div class="intake-zone-count">.eml × 20 · 已脱敏</div>
+            </div>
+          </div>
+          <span class="intake-zone-status">✓ 已摄取</span>
+        </div>
+        <div class="intake-files">
+          <div><span class="intake-files-icon">📧</span> E001_marcus_to_derek_2024-01-15.eml <span class="intake-files-meta">128 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E002_kickback_instruction.eml <span class="intake-files-meta">96 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E003_oliver_finance_thread.eml <span class="intake-files-meta">142 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E007_supplier_evaluation_skip.eml <span class="intake-files-meta">88 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E012_priority_review_request.eml <span class="intake-files-meta">114 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E017_go_dark_destruction.eml <span class="intake-files-meta">76 KB</span></div>
+          <div><span class="intake-files-icon">📧</span> E020_audit_response_draft.eml <span class="intake-files-meta">132 KB</span></div>
+          <div style="text-align:center;color:var(--t4);font-size:10px;padding:4px 0">+13 封邮件...</div>
+        </div>
+      </div>
+
+      <!-- Contracts -->
+      <div class="intake-zone">
+        <div class="intake-zone-head">
+          <div class="intake-zone-title">
+            <div class="intake-zone-icon" style="background:#fee2e2;color:#b91c1c">📄</div>
+            <div>
+              <div class="intake-zone-name">合同与发票</div>
+              <div class="intake-zone-count">.pdf × 14 · OCR 已完成</div>
+            </div>
+          </div>
+          <span class="intake-zone-status">✓ 已摄取</span>
+        </div>
+        <div class="intake-files">
+          <div><span class="intake-files-icon">📋</span> MC-2024-021_AS-700_€477K.pdf <span class="intake-files-meta">2.4 MB</span></div>
+          <div><span class="intake-files-icon">📋</span> MC-2024-018_components_€312K.pdf <span class="intake-files-meta">1.8 MB</span></div>
+          <div><span class="intake-files-icon">📋</span> MC-2024-014_specialty_€289K.pdf <span class="intake-files-meta">2.1 MB</span></div>
+          <div><span class="intake-files-icon">📋</span> INV-MERIDIAN-001_partial.pdf <span class="intake-files-meta">680 KB</span></div>
+          <div><span class="intake-files-icon">📋</span> INV-MERIDIAN-002_partial.pdf <span class="intake-files-meta">712 KB</span></div>
+          <div><span class="intake-files-icon">📋</span> ABC_supplier_qualification.pdf <span class="intake-files-meta">3.2 MB</span></div>
+          <div><span class="intake-files-icon">📋</span> Meridian_corporate_filing.pdf <span class="intake-files-meta">1.4 MB</span></div>
+          <div style="text-align:center;color:var(--t4);font-size:10px;padding:4px 0">+7 份合同...</div>
+        </div>
+      </div>
+
+      <!-- Finance -->
+      <div class="intake-zone">
+        <div class="intake-zone-head">
+          <div class="intake-zone-title">
+            <div class="intake-zone-icon" style="background:#fef3c7;color:#a16207">💰</div>
+            <div>
+              <div class="intake-zone-name">财务流水</div>
+              <div class="intake-zone-count">.csv × 30 · ERP 同步</div>
+            </div>
+          </div>
+          <span class="intake-zone-status">✓ 已摄取</span>
+        </div>
+        <div class="intake-files">
+          <div><span class="intake-files-icon">📊</span> SAP_PO_2024Q1_export.csv <span class="intake-files-meta">4.8 MB</span></div>
+          <div><span class="intake-files-icon">📊</span> SAP_AP_payment_history.csv <span class="intake-files-meta">6.2 MB</span></div>
+          <div><span class="intake-files-icon">📊</span> ERP_supplier_master_data.csv <span class="intake-files-meta">980 KB</span></div>
+          <div><span class="intake-files-icon">📊</span> bank_statement_2024Q1.csv <span class="intake-files-meta">2.1 MB</span></div>
+          <div><span class="intake-files-icon">📊</span> wire_transfer_log.csv <span class="intake-files-meta">1.7 MB</span></div>
+          <div><span class="intake-files-icon">📊</span> goods_receipt_records.csv <span class="intake-files-meta">3.4 MB</span></div>
+          <div><span class="intake-files-icon">📊</span> price_baseline_DigiKey.csv <span class="intake-files-meta">5.1 MB</span></div>
+          <div style="text-align:center;color:var(--t4);font-size:10px;padding:4px 0">+23 份流水...</div>
+        </div>
+      </div>
+
+      <!-- Logs -->
+      <div class="intake-zone">
+        <div class="intake-zone-head">
+          <div class="intake-zone-title">
+            <div class="intake-zone-icon" style="background:#dcfce7;color:#166534">🔐</div>
+            <div>
+              <div class="intake-zone-name">IT 行为日志</div>
+              <div class="intake-zone-count">.log × 11 · SIEM 同步</div>
+            </div>
+          </div>
+          <span class="intake-zone-status">✓ 已摄取</span>
+        </div>
+        <div class="intake-files">
+          <div><span class="intake-files-icon">⚙️</span> Win_EventLog_4624_login.log <span class="intake-files-meta">12.3 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> Win_EventLog_4663_fileaccess.log <span class="intake-files-meta">8.7 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> SAP_audit_trail_2024Q1.log <span class="intake-files-meta">14.2 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> O365_email_audit.log <span class="intake-files-meta">6.4 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> file_deletion_2024-01-15.log <span class="intake-files-meta">2.1 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> badge_access_audit_dept.log <span class="intake-files-meta">3.8 MB</span></div>
+          <div><span class="intake-files-icon">⚙️</span> VPN_access_log_offhours.log <span class="intake-files-meta">1.6 MB</span></div>
+          <div style="text-align:center;color:var(--t4);font-size:10px;padding:4px 0">+4 份日志...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="intake-stats">
+      <div class="intake-stat"><div class="intake-stat-val">75</div><div class="intake-stat-label">证据文件</div></div>
+      <div class="intake-stat"><div class="intake-stat-val">142 MB</div><div class="intake-stat-label">总数据量</div></div>
+      <div class="intake-stat"><div class="intake-stat-val">SHA-256</div><div class="intake-stat-label">完整性哈希</div></div>
+      <div class="intake-stat"><div class="intake-stat-val">100%</div><div class="intake-stat-label">PII 脱敏</div></div>
+    </div>
+
+    <div class="intake-launch" id="intake-launch-card">
+      <div class="intake-launch-title">所有证据已通过预检 · 准备启动 7-Agent 调查管线</div>
+      <button class="intake-launch-btn" id="intake-launch-btn" onclick="launchPipeline()">
+        ▶ 启动 7-Agent 调查管线
+      </button>
+      <div class="intake-launch-sub">点击后将依次调度 Agent 0 → 1 → 2 → 3 → 4 → 5 → 6，预计完成时间 4–8 小时（演示模式压缩至 6 秒）</div>
+
+      <div class="intake-progress" id="intake-progress">
+        <div class="intake-progress-bar"><div class="intake-progress-fill" id="intake-progress-fill"></div></div>
+        <div class="intake-progress-log" id="intake-progress-log"></div>
+      </div>
+    </div>
+
+    <div class="intake-rules-card">
+      <div class="intake-rules-title">📋 摄取阶段合规检查（ACFE FEM Rule 4 · 五源覆盖）</div>
+      <div class="intake-rules-grid">
+        <div class="intake-rule"><code>Rule 4.1</code> 所有文件计算 SHA-256 哈希并写入审计日志（《电子签名法》第 8 条）</div>
+        <div class="intake-rule"><code>Rule 4.2</code> 个人身份信息（PII）按 GDPR / PIPL 完成自动脱敏与替换</div>
+        <div class="intake-rule"><code>Rule 4.3</code> 邮件 / 合同 / 财务 / 日志四源齐备，覆盖 ACFE FEM 五源调查框架</div>
+        <div class="intake-rule"><code>Rule 4.4</code> 数据接入仅通过标准 API（Microsoft Graph / SAP RFC / SIEM 标准接口）</div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /#view-intake -->
+
+<!-- ══════════════════════════════════════════════
      VIEW: CASE  (Stage 5: 3-column shell; Steps 6–9 fill inner content)
 ════════════════════════════════════════════════ -->
 <div class="view" id="view-case">
@@ -2689,6 +2946,118 @@ IT 行为日志 × 25% = 0.88 × 0.25 = 0.220
 </div><!-- /#view-case -->
 
 <!-- ══════════════════════════════════════════════
+     VIEW: GRAPH (Relationship Network Visualization)
+════════════════════════════════════════════════ -->
+<div class="view" id="view-graph">
+  <div class="graph-wrap">
+
+    <div class="graph-hero">
+      <div class="graph-hero-label">A2 KNOWLEDGE GRAPH AGENT · 实体关系图谱</div>
+      <div class="graph-hero-title">人物·公司·合同 关联网络（Louvain Q=0.74）</div>
+      <div class="graph-hero-sub">
+        基于 Agent 2 实体消歧与图聚类结果绘制。节点大小代表综合风险评分，连线粗细代表交互强度，颜色区分 Louvain 社群。
+        点击任意节点查看其在事件中扮演的角色与关键证据。
+      </div>
+    </div>
+
+    <div class="graph-layout">
+
+      <!-- LEFT: SVG canvas -->
+      <div class="graph-canvas-wrap">
+        <div class="graph-canvas-head">
+          <span>关系图谱 · Force-Directed Network</span>
+          <div class="graph-legend">
+            <div class="graph-legend-item"><span class="graph-legend-dot" style="background:#ef4444"></span>核心嫌疑社群</div>
+            <div class="graph-legend-item"><span class="graph-legend-dot" style="background:#f59e0b"></span>关联社群</div>
+            <div class="graph-legend-item"><span class="graph-legend-dot" style="background:#3b82f6"></span>外部实体</div>
+            <div class="graph-legend-item"><span class="graph-legend-dot" style="background:#94a3b8"></span>正常节点</div>
+          </div>
+        </div>
+        <svg id="graph-svg" viewBox="0 0 920 510" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="garrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+            </marker>
+          </defs>
+          <g id="graph-links"></g>
+          <g id="graph-nodes"></g>
+        </svg>
+      </div>
+
+      <!-- RIGHT: Side panel -->
+      <div class="graph-side">
+
+        <div class="graph-card">
+          <div class="graph-card-title">
+            🎯 综合风险排序
+            <span class="count-chip">Top 5</span>
+          </div>
+          <div class="graph-people-row" onclick="selectGraphNode('marcus')">
+            <span class="graph-people-dot" style="background:#dc2626"></span>
+            <div style="flex:1">
+              <div class="graph-people-name">Marcus Chen</div>
+              <div class="graph-people-role">CPO · 采购副总裁</div>
+            </div>
+            <div class="graph-people-score">0.97</div>
+          </div>
+          <div class="graph-people-row" onclick="selectGraphNode('derek')">
+            <span class="graph-people-dot" style="background:#dc2626"></span>
+            <div style="flex:1">
+              <div class="graph-people-name">Derek Chen</div>
+              <div class="graph-people-role">外部 · ABC 实控人</div>
+            </div>
+            <div class="graph-people-score">0.94</div>
+          </div>
+          <div class="graph-people-row" onclick="selectGraphNode('oliver')">
+            <span class="graph-people-dot" style="background:#dc2626"></span>
+            <div style="flex:1">
+              <div class="graph-people-name">Oliver Hartmann</div>
+              <div class="graph-people-role">CFO · 财务总监</div>
+            </div>
+            <div class="graph-people-score">0.89</div>
+          </div>
+          <div class="graph-people-row" onclick="selectGraphNode('abc')">
+            <span class="graph-people-dot" style="background:#dc2626"></span>
+            <div style="flex:1">
+              <div class="graph-people-name">ABC Electronics</div>
+              <div class="graph-people-role">供应商 · 实体合并三别名</div>
+            </div>
+            <div class="graph-people-score">0.91</div>
+          </div>
+          <div class="graph-people-row" onclick="selectGraphNode('rachel')">
+            <span class="graph-people-dot" style="background:#f59e0b"></span>
+            <div style="flex:1">
+              <div class="graph-people-name">Rachel Kim</div>
+              <div class="graph-people-role">采购经理 · 跨社群桥接</div>
+            </div>
+            <div class="graph-people-score">0.62</div>
+          </div>
+        </div>
+
+        <div class="graph-card">
+          <div class="graph-card-title">📊 图谱指标</div>
+          <div class="graph-metric"><span>节点总数</span><strong>14</strong></div>
+          <div class="graph-metric"><span>边总数</span><strong>23</strong></div>
+          <div class="graph-metric"><span>检测社群数</span><strong>3</strong></div>
+          <div class="graph-metric"><span>Louvain 模块度 Q</span><strong>0.74</strong></div>
+          <div class="graph-metric"><span>核心社群节点</span><strong>4</strong></div>
+          <div class="graph-metric"><span>桥接节点</span><strong>2</strong></div>
+        </div>
+
+        <div class="graph-card">
+          <div class="graph-card-title">👤 节点详情</div>
+          <div id="graph-detail">
+            <div class="graph-detail-empty">点击图中或左侧列表中的节点查看详情</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div><!-- /#view-graph -->
+
+<!-- ══════════════════════════════════════════════
      AGENT DETAIL MODAL  (内容 Stage 4 实现)
 ════════════════════════════════════════════════ -->
 <div id="agent-modal" onclick="handleModalOverlay(event)">
@@ -2781,6 +3150,193 @@ function showView(name){
     setTimeout(caseInit, 50);
     setTimeout(animateConfGauge, 400);
   }
+
+  // Graph view init
+  if(name==='graph') {
+    setTimeout(renderGraph, 60);
+  }
+
+  // Intake view: reset launch button state
+  if(name==='intake') {
+    const btn = document.getElementById('intake-launch-btn');
+    const prog = document.getElementById('intake-progress');
+    const fill = document.getElementById('intake-progress-fill');
+    const log = document.getElementById('intake-progress-log');
+    if(btn) { btn.disabled = false; btn.textContent = '▶ 启动 7-Agent 调查管线'; }
+    if(prog) prog.classList.remove('active');
+    if(fill) fill.style.width = '0';
+    if(log) log.innerHTML = '';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PIPELINE LAUNCH (Step 0 → Case view)
+══════════════════════════════════════════════ */
+function launchPipeline(){
+  const btn = document.getElementById('intake-launch-btn');
+  const prog = document.getElementById('intake-progress');
+  const fill = document.getElementById('intake-progress-fill');
+  const log = document.getElementById('intake-progress-log');
+
+  btn.disabled = true;
+  btn.textContent = '▶ 调度中…';
+  prog.classList.add('active');
+  log.innerHTML = '';
+
+  const steps = [
+    {pct:8,  msg:'[Agent 0] 任务分发：12 步管线已就绪 · 7 个 Agent 已注册', cls:'ok'},
+    {pct:18, msg:'[Agent 1] 文档情报官：解析 14 份合同 PDF + 20 封邮件...', cls:''},
+    {pct:30, msg:'[Agent 1] OCR + NER 完成，识别实体 47 个，金额条款 23 条', cls:'ok'},
+    {pct:42, msg:'[Agent 2] 实体图谱官：执行 Louvain 社群聚类...', cls:''},
+    {pct:54, msg:'[Agent 2] 检测到 3 个社群，模块度 Q=0.74 (核心社群 4 节点)', cls:'ok'},
+    {pct:65, msg:'[Agent 3] 统计核查官：DigiKey + CCGP 价格基准比对...', cls:''},
+    {pct:74, msg:'[Agent 3] 发现 12.12σ 价格异常 (合同 MC-2024-021)', cls:'warn'},
+    {pct:82, msg:'[Agent 4] 行为画像官：UEBA 时序基线建模 (90 天)...', cls:''},
+    {pct:88, msg:'[Agent 4] 检测到 113σ 批量删除 (23:28 内审当夜)', cls:'warn'},
+    {pct:93, msg:'[Agent 5] 假设验证官：5 W 因果链 + Triangulation 三源交叉...', cls:''},
+    {pct:97, msg:'[Agent 6] 合规报告官：生成纪律处分草稿 + 司法移交包', cls:''},
+    {pct:100,msg:'✓ 管线完成：综合置信度 92% · 等待 HITL 审批 (Tier 1)', cls:'ok'}
+  ];
+
+  let i = 0;
+  const interval = setInterval(()=>{
+    if(i >= steps.length) {
+      clearInterval(interval);
+      btn.textContent = '✓ 调查完成 → 跳转结果页';
+      setTimeout(()=>{ showView('case'); }, 700);
+      return;
+    }
+    const s = steps[i];
+    fill.style.width = s.pct + '%';
+    const div = document.createElement('div');
+    if(s.cls) div.className = s.cls;
+    div.textContent = s.msg;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    i++;
+  }, 480);
+}
+
+/* ══════════════════════════════════════════════
+   GRAPH VIEW — Force-directed Network
+══════════════════════════════════════════════ */
+const GRAPH_DATA = {
+  nodes: [
+    {id:'marcus',  label:'Marcus Chen',  sub:'CPO',         x:240, y:230, r:30, score:0.97, group:1, role:'CPO · 采购副总裁',      reason:'回扣指令邮件主体；与 ABC Electronics 共谋；夜间高频邮件；审批权限滥用',     evid:'EV-A-002 · EV-A-017 · EV-C-021'},
+    {id:'derek',   label:'Derek Chen',   sub:'外部 ABC 实控人', x:430, y:165, r:28, score:0.94, group:1, role:'外部 · ABC Electronics 实控人', reason:'与 Marcus 同姓血缘关系；非市场价格收款 €477K；离岸账户回流',                    evid:'EV-C-021 · EV-F-008 · EV-K-003'},
+    {id:'oliver',  label:'Oliver Hartmann', sub:'CFO',     x:425, y:330, r:26, score:0.89, group:1, role:'CFO · 财务总监',          reason:'放行异常付款；批准供应商免评估；绕过双签',                                       evid:'EV-A-003 · EV-F-014'},
+    {id:'abc',     label:'ABC Electronics', sub:'供应商 (3 别名)', x:625, y:230, r:32, score:0.91, group:1, role:'供应商 · Meridian / ABC-Elec / Meridian Components 三别名合并', reason:'Agent 2 实体消歧：依工商注册简称合并；价格异常 12.12σ；零入库 219 天',  evid:'EV-G-021 · EV-C-021'},
+    {id:'rachel',  label:'Rachel Kim',   sub:'采购经理',     x:330, y:430, r:18, score:0.62, group:2, role:'采购经理 · 跨社群桥接节点', reason:'Marcus 直接下属；介数中心性高；可能受指令影响',                                  evid:'EV-A-009'},
+    {id:'james',   label:'James Wei',    sub:'供应商评估专员', x:160, y:380, r:14, score:0.45, group:2, role:'供应商评估专员',         reason:'被指令跳过 ABC 资质评估；存在工作记录矛盾',                                     evid:'EV-A-007'},
+    {id:'audit',   label:'内审组',        sub:'Audit Team',  x:760, y:140, r:20, score:0.30, group:3, role:'内部审计组',             reason:'2024-01-15 启动审计；触发后续 23:14 销毁指令邮件',                              evid:'EV-A-017'},
+    {id:'erp',     label:'SAP ERP',      sub:'系统',         x:760, y:340, r:14, score:0.20, group:3, role:'SAP ERP 系统 (审计日志源)', reason:'113σ 批量删除事件；4663 文件访问异常；归档完整',                                evid:'EV-B-010'},
+    {id:'bank',    label:'离岸账户',      sub:'Cayman Trust', x:570, y:430, r:16, score:0.78, group:1, role:'开曼离岸信托账户',         reason:'€477K 付款流向；多层 SPV 嵌套；最终受益人指向 Derek',                            evid:'EV-K-003'},
+    {id:'derek_p', label:'Derek 个人',    sub:'Personal',    x:680, y:455, r:12, score:0.86, group:1, role:'Derek 个人账户',           reason:'离岸账户最终受益人；与 Marcus 血缘关联',                                          evid:'EV-K-003'},
+    {id:'meridian',label:'Meridian Comp.', sub:'别名 1',     x:760, y:225, r:11, score:0.50, group:1, role:'Meridian Components Ltd. (合并入 ABC)', reason:'工商简称合并；Agent 2 实体消歧',                                            evid:''},
+    {id:'meridian2',label:'Meridian',    sub:'别名 2',       x:680, y:160, r:10, score:0.50, group:1, role:'Meridian (合并入 ABC)',    reason:'工商简称合并',                                                                evid:''},
+    {id:'sandra',  label:'Sandra Liu',   sub:'AP 财务',      x:330, y:80,  r:13, score:0.35, group:2, role:'AP 财务 · 应付账款岗',     reason:'操作执行人；无主动违规',                                                       evid:''},
+    {id:'wh',      label:'仓库 GR 系统', sub:'WMS',          x:560, y:80,  r:11, score:0.40, group:3, role:'入库系统 (Goods Receipt)', reason:'MC-2024-021 入库记录缺失 219 天',                                              evid:'EV-G-021'}
+  ],
+  links: [
+    {s:'marcus', t:'derek',   w:5, label:'回扣指令'},
+    {s:'marcus', t:'abc',     w:4, label:'审批'},
+    {s:'oliver', t:'abc',     w:3, label:'付款放行'},
+    {s:'derek',  t:'abc',     w:5, label:'实控'},
+    {s:'abc',    t:'meridian',w:4, label:'同一实体'},
+    {s:'abc',    t:'meridian2',w:3,label:'同一实体'},
+    {s:'abc',    t:'bank',    w:3, label:'付款 €477K'},
+    {s:'bank',   t:'derek_p', w:3, label:'最终受益'},
+    {s:'marcus', t:'oliver',  w:3, label:'频繁通信'},
+    {s:'marcus', t:'rachel',  w:2, label:'下达指令'},
+    {s:'rachel', t:'james',   w:2, label:'转达'},
+    {s:'james',  t:'abc',     w:1, label:'评估跳过'},
+    {s:'audit',  t:'marcus',  w:2, label:'触发审计'},
+    {s:'audit',  t:'erp',     w:1, label:'查询日志'},
+    {s:'erp',    t:'marcus',  w:2, label:'127件删除'},
+    {s:'wh',     t:'abc',     w:1, label:'零入库'},
+    {s:'sandra', t:'oliver',  w:1, label:'报告'},
+    {s:'oliver', t:'marcus',  w:2, label:'共谋'},
+    {s:'derek',  t:'derek_p', w:3, label:'同一人'}
+  ]
+};
+
+const GRP_COLOR = {1:'#dc2626', 2:'#f59e0b', 3:'#3b82f6'};
+
+function renderGraph(){
+  const linksG = document.getElementById('graph-links');
+  const nodesG = document.getElementById('graph-nodes');
+  if(!linksG || !nodesG) return;
+  linksG.innerHTML = '';
+  nodesG.innerHTML = '';
+
+  const nmap = {};
+  GRAPH_DATA.nodes.forEach(n=> nmap[n.id]=n);
+
+  // links
+  GRAPH_DATA.links.forEach(l=>{
+    const a = nmap[l.s], b = nmap[l.t];
+    if(!a || !b) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', a.x);
+    line.setAttribute('y1', a.y);
+    line.setAttribute('x2', b.x);
+    line.setAttribute('y2', b.y);
+    line.setAttribute('stroke', a.group===1 && b.group===1 ? '#dc2626' : '#94a3b8');
+    line.setAttribute('stroke-width', l.w);
+    line.setAttribute('class','glink');
+    line.setAttribute('marker-end','url(#garrow)');
+    const title = document.createElementNS('http://www.w3.org/2000/svg','title');
+    title.textContent = `${a.label} → ${b.label} : ${l.label}`;
+    line.appendChild(title);
+    linksG.appendChild(line);
+  });
+
+  // nodes
+  GRAPH_DATA.nodes.forEach(n=>{
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','gnode');
+    g.setAttribute('transform',`translate(${n.x},${n.y})`);
+    g.addEventListener('click', ()=> selectGraphNode(n.id));
+
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r', n.r);
+    c.setAttribute('fill', GRP_COLOR[n.group] || '#94a3b8');
+    c.setAttribute('fill-opacity', 0.85);
+    c.setAttribute('stroke','#fff');
+    c.setAttribute('stroke-width', 2);
+    g.appendChild(c);
+
+    const t1 = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t1.setAttribute('class','gnode-label');
+    t1.setAttribute('y', n.r + 14);
+    t1.textContent = n.label;
+    g.appendChild(t1);
+
+    const t2 = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t2.setAttribute('class','gnode-sublabel');
+    t2.setAttribute('y', n.r + 25);
+    t2.textContent = n.sub;
+    g.appendChild(t2);
+
+    nodesG.appendChild(g);
+  });
+}
+
+function selectGraphNode(id){
+  const n = GRAPH_DATA.nodes.find(x=>x.id===id);
+  if(!n) return;
+  const detail = document.getElementById('graph-detail');
+  if(!detail) return;
+  detail.innerHTML = `
+    <div class="graph-detail-name">${n.label}</div>
+    <div class="graph-detail-role">${n.role}</div>
+    <div class="graph-detail-score">
+      <div class="graph-detail-score-val">${n.score.toFixed(2)}</div>
+      <div class="graph-detail-score-bar"><div class="graph-detail-score-bar-fill" style="width:${n.score*100}%"></div></div>
+    </div>
+    <div class="graph-detail-reason"><strong>判定原因：</strong>${n.reason}</div>
+    ${n.evid ? `<div class="graph-detail-evidence">📎 关键证据：${n.evid}</div>` : ''}
+  `;
 }
 
 /* ══════════════════════════════════════════════
