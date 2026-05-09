@@ -3867,7 +3867,12 @@ function showView(name, fromHistory){
 
   // Push to browser history (so back button steps through views)
   if(!fromHistory){
-    try { history.pushState({mt_view: name}, ''); } catch(e){}
+    const cur = history.state;
+    // Skip if already on this exact view (prevents duplicate history entries)
+    const sameView = cur && cur.mt_view === name && !cur.mt_sub;
+    if(!sameView){
+      try { history.pushState({mt_view: name}, ''); } catch(e){}
+    }
   }
 
   // Intake view: reset launch button state
@@ -4068,7 +4073,12 @@ function conGoSub(name, fromHistory){
   window.scrollTo({top:0,behavior:'instant'});
   // Push to browser history so back button steps through sub-screens
   if(!fromHistory){
-    try { history.pushState({mt_view:'console', mt_sub: name}, ''); } catch(e){}
+    const cur = history.state;
+    // Skip if already on this exact sub (prevents duplicate history entries)
+    const sameSub = cur && cur.mt_view === 'console' && cur.mt_sub === name;
+    if(!sameSub){
+      try { history.pushState({mt_view:'console', mt_sub: name}, ''); } catch(e){}
+    }
   }
 }
 
