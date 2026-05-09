@@ -4084,6 +4084,12 @@ function conGoSub(name, fromHistory){
 
 // Browser back/forward — step through both top-level views and Console sub-screens
 window.addEventListener('popstate', (e)=>{
+  // Always dismiss any open overlays first (HITL modal, agent modal, side panel)
+  const hitl = document.getElementById('con-hitl-overlay');
+  if(hitl) hitl.classList.remove('active');
+  closeAgentModal();
+  closeSidePanel();
+
   const s = e.state;
   if(s && s.mt_view === 'console'){
     // Restore Console view + sub-screen
