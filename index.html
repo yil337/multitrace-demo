@@ -3830,7 +3830,7 @@ function toggleTheme(){
 /* ══════════════════════════════════════════════
    VIEW SWITCHING
 ══════════════════════════════════════════════ */
-function showView(name){
+function showView(name, fromHistory){
   // Deactivate all views
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   // Deactivate all nav links
@@ -3860,9 +3860,14 @@ function showView(name){
     setTimeout(renderGraph, 60);
   }
 
-  // Console view init — always reset to home sub
+  // Console view init — always reset to home sub (skip pushState since showView itself pushes)
   if(name==='console') {
-    conGoSub('home');
+    conGoSub('home', true);
+  }
+
+  // Push to browser history (so back button steps through views)
+  if(!fromHistory){
+    try { history.pushState({mt_view: name}, ''); } catch(e){}
   }
 
   // Intake view: reset launch button state
@@ -4063,34 +4068,33 @@ function conGoSub(name, fromHistory){
   window.scrollTo({top:0,behavior:'instant'});
   // Push to browser history so back button steps through sub-screens
   if(!fromHistory){
-    try { history.pushState({mt_sub: name}, ''); } catch(e){}
+    try { history.pushState({mt_view:'console', mt_sub: name}, ''); } catch(e){}
   }
 }
 
-// Browser back/forward — step through sub-screens before exiting Console
+// Browser back/forward — step through both top-level views and Console sub-screens
 window.addEventListener('popstate', (e)=>{
-  if(e.state && e.state.mt_sub){
-    // Ensure Console view is active, then switch sub-screen
+  const s = e.state;
+  if(s && s.mt_view === 'console'){
+    // Restore Console view + sub-screen
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
     const cv = document.getElementById('view-console');
-    if(cv && !cv.classList.contains('active')){
-      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-      cv.classList.add('active');
-      const cl = document.getElementById('nav-console');
-      if(cl) cl.classList.add('active');
-    }
-    conGoSub(e.state.mt_sub, true);
+    const cl = document.getElementById('nav-console');
+    if(cv) cv.classList.add('active');
+    if(cl) cl.classList.add('active');
+    conGoSub(s.mt_sub || 'home', true);
+  } else if(s && s.mt_view){
+    // Restore other top-level view (home/case/graph/intake)
+    showView(s.mt_view, true);
   } else {
-    // No console-sub state — fall back to Home view
-    const consoleView = document.getElementById('view-console');
-    if(consoleView && consoleView.classList.contains('active')){
-      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
-      const hv = document.getElementById('view-home');
-      const hl = document.getElementById('nav-home');
-      if(hv) hv.classList.add('active');
-      if(hl) hl.classList.add('active');
-    }
+    // No state — page-load entry, fall back to Home
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+    const hv = document.getElementById('view-home');
+    const hl = document.getElementById('nav-home');
+    if(hv) hv.classList.add('active');
+    if(hl) hl.classList.add('active');
   }
 });
 
