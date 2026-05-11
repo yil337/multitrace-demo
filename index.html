@@ -2004,6 +2004,42 @@ html[data-theme="dark"] .case-tag-demo{color:#fcd34d}
 .fib-val-green{color:var(--green)}
 .fib-sub{font-size:10px;color:var(--t4);margin-top:3px}
 
+/* ── Step 12 Final Report Preview (revealed on approval) ── */
+.step12-report{
+  display:none;
+  margin-top:20px;
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:1.5px solid #86efac;
+  border-radius:14px;
+  padding:24px 26px;
+  box-shadow:0 6px 24px rgba(22,163,74,.12);
+}
+.step12-report.revealed{display:block;animation:step12fadeIn .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes step12fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step12-report-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid #86efac}
+.step12-report-icon{font-size:32px;flex-shrink:0}
+.step12-report-title{font-size:17px;font-weight:700;color:#15803d;margin-bottom:3px;letter-spacing:-.2px}
+.step12-report-sub{font-size:11.5px;color:#166534;line-height:1.5}
+.step12-report-sub code{background:rgba(22,163,74,.12);padding:1px 6px;border-radius:3px;color:#15803d;font-size:10.5px}
+.step12-report-badge{margin-left:auto;background:#16a34a;color:#fff;padding:5px 12px;border-radius:14px;font-size:10.5px;font-weight:700;letter-spacing:1px;flex-shrink:0}
+.step12-report-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.step12-report-section{background:rgba(255,255,255,.55);border-radius:8px;padding:12px 14px}
+.step12-report-section-label{font-size:10px;font-weight:700;color:#15803d;letter-spacing:1px;margin-bottom:8px}
+.step12-report-content{font-size:12px;color:#166534;line-height:1.6}
+.step12-report-content strong{color:#15803d;font-weight:700}
+.step12-report-list{margin:0;padding-left:18px;font-size:11.5px;color:#166534;line-height:1.65}
+.step12-report-list li{margin-bottom:4px}
+.step12-report-list strong{color:#15803d;font-weight:600}
+.step12-report-pills{display:flex;flex-wrap:wrap;gap:6px}
+.step12-pill{display:inline-flex;align-items:center;padding:4px 9px;background:#16a34a;color:#fff;border-radius:11px;font-size:10px;font-weight:600;letter-spacing:.2px}
+.step12-report-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-size:10.5px;color:#166534;background:rgba(255,255,255,.45);border-radius:6px;padding:10px 14px;margin-bottom:14px;line-height:1.55}
+.step12-report-meta code{background:rgba(22,163,74,.15);padding:0 5px;border-radius:3px;font-size:10px;color:#15803d}
+.step12-report-actions{display:flex;flex-wrap:wrap;gap:8px}
+.step12-report-btn{padding:9px 16px;background:#fff;color:#15803d;border:1px solid #86efac;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.step12-report-btn:hover{background:#16a34a;color:#fff;border-color:#16a34a}
+.step12-report-btn.primary{background:#16a34a;color:#fff;border-color:#16a34a}
+.step12-report-btn.primary:hover{background:#15803d;border-color:#15803d}
+
 /* ── Disposition matrix (Step 12) ── */
 .disp-recommended td{background:rgba(22,163,74,.05)!important}
 .disp-curr-badge{
@@ -2790,7 +2826,7 @@ IT 行为日志 × 25% = 0.88 × 0.25 = 0.220
           </div>
           <div class="ability-item">
             <div class="ability-dot"></div>
-            <span>三单比对规则引擎：合同 vs 付款 vs 收货单时序 &amp; 数量校验<span class="ability-cite">KPMG 九步框架</span></span>
+            <span>三单比对规则引擎：合同 vs 付款 vs 收货单时序 &amp; 数量校验<span class="ability-cite">COSO 内控框架</span></span>
           </div>
           <div class="ability-item">
             <div class="ability-dot"></div>
@@ -5028,7 +5064,7 @@ const AGENT_CONTENT={
     color:'var(--amber)',
     abilities:[
       {text:'真实 σ 计算：μ/σ 从 <strong>DigiKey REST API</strong>（实时报价）+ <strong>CCGP 政采数据接口 V1.0</strong>（历史成交价）查询，σ 值实时计算非硬编码——MC-2024-021: z=(468-285)/15.1=<strong>12.12σ</strong>；MC-2024-068: z=<strong>6.83σ</strong>；MC-2024-089: z=<strong>12.60σ</strong>（均超 2σ 告警阈值 6倍以上）',cite:'arXiv:2508.06574 FPR 2.9%'},
-      {text:'三单比对规则引擎（参照 KPMG 九步框架）：合同单价 ×数量 vs 付款金额 vs 收货单数量——MC-2024-021 付款 €477K后 219天无入库记录（严重异常）；MC-2024-068 仅到货 83.75% 却已付全款（520件缺失，€71,760）',cite:'KPMG 九步框架'},
+      {text:'三单比对规则引擎（参照 COSO 内控框架）：合同单价 ×数量 vs 付款金额 vs 收货单数量——MC-2024-021 付款 €477K后 219天无入库记录（严重异常）；MC-2024-068 仅到货 83.75% 却已付全款（520件缺失，€71,760）',cite:'COSO 内控框架'},
       {text:'竞标拆分检测：同一供应商 9 个月内 3 份合同（€477K+€441K+€688K=€1.63M），单笔均低于招标门槛，累积超标——典型 bid-splitting 模式',cite:''},
     ],
     react:[
@@ -5784,7 +5820,7 @@ const STEP_BODY_FNS = {
         <tr>
           <td>空值标记（三单比对预处理）</td>
           <td>1 条（MC-2024-021）</td>
-          <td>KPMG 九步框架</td>
+          <td>COSO 内控框架</td>
           <td class="td-err">⚠ goods_receipts.json 中 MC-2024-021 无入库记录</td>
         </tr>
         <tr>
@@ -5815,7 +5851,7 @@ const STEP_BODY_FNS = {
 
 <div class="mbadge-wrap">
   ${mb('blue','⚙ 数据清洗','Step 4','ISO 8601','49条记录时间戳标准化，3对实体名称候选消歧')}
-  ${mb('red','⚠ 空值异常','Step 4','KPMG九步框架','MC-2024-021 零收货219天，标记为三单比对待分析')}
+  ${mb('red','⚠ 空值异常','Step 4','COSO 内控框架','MC-2024-021 零收货219天，标记为三单比对待分析')}
 </div>`,
 
 /* ─────────────── Step 5 — 实体解析 ─────────────── */
@@ -5936,7 +5972,7 @@ const STEP_BODY_FNS = {
   <span class="ash-icon">📊</span>
   <div>
     <div class="ash-name">Step 7a — 统计核查官（Statistical Analysis Agent）</div>
-    <div class="ash-sub">价格偏离σ分析 + 三单比对异常 ｜ ACFE FEM 2022 采购欺诈统计分析 + KPMG九步框架 + DigiKey REST API + CCGP政采数据</div>
+    <div class="ash-sub">价格偏离σ分析 + 三单比对异常 ｜ ACFE FEM 2022 采购欺诈统计分析 + COSO 内控框架 + DigiKey REST API + CCGP政采数据</div>
   </div>
 </div>
 
@@ -6066,7 +6102,7 @@ const STEP_BODY_FNS = {
 </div>
 
 <div class="step-section">
-  <div class="step-section-title">⚖ 三单比对异常（合同 ↔ 付款 ↔ 入库，KPMG 九步框架）</div>
+  <div class="step-section-title">⚖ 三单比对异常（合同 ↔ 付款 ↔ 入库，COSO 内控框架）</div>
   <div class="step-table-wrap">
     <table class="step-table">
       <thead>
@@ -6158,8 +6194,8 @@ const STEP_BODY_FNS = {
 <div class="mbadge-wrap">
   ${mb('red','⚠ 统计异常','Step 7a','ACFE FEM 2022 采购欺诈统计分析','MC-2024-021 偏离+64.2% = 12.12σ（DigiKey+CCGP σ=15.1，阈值>2σ）')}
   ${mb('red','⚠ 统计异常','Step 7a','ACFE FEM 2022 采购欺诈统计分析','MC-2024-068 偏离+45.3% = 6.83σ（DigiKey+CCGP σ=6.3，Cascade第二份）')}
-  ${mb('amber','⚠ 时序异常','Step 7a','KPMG九步框架','MC-2024-021 付款(03-05)→入库缺失(219天+)，零收货，€477K已转出')}
-  ${mb('amber','⚠ 时序异常','Step 7a','KPMG九步框架','MC-2024-068 付款(06-10)→入库(07-08)逆序28天，83.75%入库，520件缺失')}
+  ${mb('amber','⚠ 时序异常','Step 7a','COSO 内控框架','MC-2024-021 付款(03-05)→入库缺失(219天+)，零收货，€477K已转出')}
+  ${mb('amber','⚠ 时序异常','Step 7a','COSO 内控框架','MC-2024-068 付款(06-10)→入库(07-08)逆序28天，83.75%入库，520件缺失')}
 </div>
 
 <!-- ══════════ 7b 行为画像官 ══════════ -->
@@ -6960,6 +6996,69 @@ const STEP_BODY_FNS = {
   ${mb('green','✓ 处置方案','Step 12','《中央企业合规管理办法》国资委令第43号(2022)','推荐：内部纪律处分 + 民事追缴€695K（置信度 92%）')}
   ${mb('blue','🔧 系统整改','Step 12','COSO 内控框架 + NIST CSF','5项采购漏洞识别完毕，P0整改3项本季落地')}
   ${mb('amber','⏸ 等待授权','Step 12','审计委员会 Tier 1 HITL · EU AI Act Art.14','最终执行需审计委员会主席批准')}
+</div>
+
+<!-- ───────── Final Report Preview (revealed after Step 12 approval) ───────── -->
+<div class="step12-report" id="step12-report-box">
+  <div class="step12-report-head">
+    <div class="step12-report-icon">📋</div>
+    <div>
+      <div class="step12-report-title">最终调查报告已生成</div>
+      <div class="step12-report-sub">Report ID: <code>INV-2024-3891-FINAL.pdf</code> · 47 页 · 75 项证据 · SHA-256 已封装 · 审计日志已签名</div>
+    </div>
+    <div class="step12-report-badge">✓ SEALED</div>
+  </div>
+
+  <div class="step12-report-grid">
+    <div class="step12-report-section">
+      <div class="step12-report-section-label">EXECUTIVE SUMMARY · 执行摘要</div>
+      <div class="step12-report-content">基于 75 项跨源证据（20 封邮件 / 14 份合同 / 30 条流水 / 11 条 IT 日志），三源加权综合置信度 <strong>92%</strong>。Marcus Chen（CPO）主导采购回扣方案，与外部 ABC Electronics 共谋，涉及金额 <strong>€695K</strong>。建议：内部纪律处分 + 民事追缴，并启动 5 项 P0/P1 内控整改。</div>
+    </div>
+    <div class="step12-report-section">
+      <div class="step12-report-section-label">KEY FINDINGS · 关键发现（4 项）</div>
+      <ul class="step12-report-list">
+        <li><strong>Marcus Chen 主导回扣方案</strong> · 与外部 ABC Electronics 共谋（同姓血缘关系）</li>
+        <li><strong>价格异常 12.12σ</strong> · ABC 报价较 DigiKey 基准虚高（p &lt; 0.0001）</li>
+        <li><strong>127 份审计日志被批量删除</strong> · 距内审启动 15h 28m（z = 113.0σ）</li>
+        <li><strong>€477K 流向开曼 SPV</strong> · 最终受益人指向 Derek Chen</li>
+      </ul>
+    </div>
+    <div class="step12-report-section">
+      <div class="step12-report-section-label">DISPOSITION · 处置建议</div>
+      <ul class="step12-report-list">
+        <li>启动 Tier 1 纪律处分（停职 + 法务介入）</li>
+        <li>民事追缴 <strong>€695K</strong>（Clawback + 民事保全）</li>
+        <li>移交财务诈骗指控至 Legal（依据：刑法第 271 条）</li>
+        <li>提交 SAR 可疑交易报告（FinCEN-compliant）</li>
+        <li>5 项内控整改：三单比对自动化 / 双签强制 / 供应商资质年审 / 离岸账户预警 / 日志保留 365 天</li>
+      </ul>
+    </div>
+    <div class="step12-report-section">
+      <div class="step12-report-section-label">COMPLIANCE · 合规验证</div>
+      <div class="step12-report-pills">
+        <span class="step12-pill">✓ ACFE FEM §3-7</span>
+        <span class="step12-pill">✓ EU AI Act Art.14</span>
+        <span class="step12-pill">✓ GDPR Art.22</span>
+        <span class="step12-pill">✓ 电子签名法 §8</span>
+        <span class="step12-pill">✓ 国资委令第 43 号</span>
+        <span class="step12-pill">✓ COSO 内控框架</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step12-report-meta">
+    <div>生成时间：<span id="step12-report-time">—</span></div>
+    <div>归档位置：证据链节点 <code>EV-REPORT-001</code></div>
+    <div>SHA-256：<code>0x7f3a2b1c9e8d4f02…a3f7</code></div>
+    <div>审计签名：审计委员会主席 + Lead CFE（双签）</div>
+  </div>
+
+  <div class="step12-report-actions">
+    <button class="step12-report-btn primary" onclick="showToast('📄','INV-2024-3891-FINAL.pdf (47 页) 已下载至本地')">下载完整 PDF（47 页）</button>
+    <button class="step12-report-btn" onclick="showToast('✉','已发送至 sarah.liu@deloitte.com — 法务顾问')">发送至 Legal</button>
+    <button class="step12-report-btn" onclick="showToast('🏛','已发送至审计委员会主席 + 监察办公室')">发送至审计委员会</button>
+    <button class="step12-report-btn" onclick="showToast('📅','已创建：明日 10:00 召开复核会议（4 人）')">召集复核会议</button>
+  </div>
 </div>`,
 
 }; // end STEP_BODY_FNS
@@ -6986,10 +7085,30 @@ function approveStep12() {
   btn.textContent = '✓ 已授权 — 处置方案执行中';
   box.classList.add('approved');
   box.querySelector('.hitl-approve-title').textContent = '✓ 审计委员会授权完成 — INV-2024-3891 进入处置执行阶段';
-  showToast('✅', '审计委员会主席已授权。MultiTrace 正在生成最终报告并触发纪律处分流程…');
+  showToast('✅', '审计委员会主席已授权。MultiTrace 正在封装最终报告…');
+
+  // Reveal the final report card with smooth animation + scroll
   setTimeout(() => {
-    showToast('📄', '最终报告 INV-2024-3891-FINAL.pdf 已生成并归档至证据链 (EV-REPORT-001)');
-  }, 2000);
+    const report = document.getElementById('step12-report-box');
+    if (report) {
+      // Set generation timestamp
+      const now = new Date();
+      const ts = now.getFullYear() + '-' +
+                 String(now.getMonth()+1).padStart(2,'0') + '-' +
+                 String(now.getDate()).padStart(2,'0') + ' ' +
+                 String(now.getHours()).padStart(2,'0') + ':' +
+                 String(now.getMinutes()).padStart(2,'0') + ':' +
+                 String(now.getSeconds()).padStart(2,'0');
+      const tsEl = document.getElementById('step12-report-time');
+      if (tsEl) tsEl.textContent = ts;
+      report.classList.add('revealed');
+      // Scroll the report into view smoothly so the user actually sees it
+      setTimeout(() => {
+        report.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
+      showToast('📄', '最终报告 INV-2024-3891-FINAL.pdf 已生成 · 已归档至证据链 EV-REPORT-001');
+    }
+  }, 1400);
 }
 
 /* ══════════════════════════════════════════════
